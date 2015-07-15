@@ -10,6 +10,8 @@
 
 #include "arg.h"
 
+#define LENGTH(X) (sizeof(X) / sizeof(X[0]))
+
 char * daynames[] = {
 	"Monday",
 	"Tuesday",
@@ -87,6 +89,7 @@ main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
 	static size_t size = 0;
+	int day;
 
 	ARGBEGIN {
 	default:
@@ -98,6 +101,9 @@ main(int argc, char *argv[]) {
 		if ((time = istask(buf)) >= 0)
 			printf("% 6d %s", time, buf);
 	}
+
+	for (day = 0; day < LENGTH(daynames); day++)
+		printf("%-9s %2d :\n", daynames[day], day);
 
 	free(buf);
 	return EXIT_SUCCESS;
