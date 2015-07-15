@@ -42,8 +42,13 @@ istask(const char * line) {
 	char * ob; /* open bracket */
 	if ((ob = strchr(line, '('))) {
 		if (istime(ob + 1)
-			&& ob[6] == '-')
-			printf("%s", line);
+				&& ob[6] == '-') {
+			if (istime(ob + 7) && ob[12] == ')') {
+				return 1;
+			} else if (ob[7] == ')') {
+				return 2;
+			}
+		}
 	}
 	return 0;
 }
@@ -60,7 +65,8 @@ main(int argc, char *argv[]) {
 	} ARGEND;
 
 	while (getline(&buf, &size, fp) > 0) {
-		istask(buf);
+		if (istask(buf))
+			printf("%s", buf);
 	}
 
 	free(buf);
