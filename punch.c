@@ -13,6 +13,16 @@
 
 #include "arg.h"
 
+char * daynames[] = {
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
+	"Sunday"
+};
+
 char *argv0;
 
 static void
