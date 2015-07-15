@@ -1,8 +1,5 @@
 /* See LICENSE file for copyright and license details.
  *
- * Purpose of this program is to colorize output of ii connected to
- * bitlbee. It also filters out join statuses.
- *
  */
 
 #include <ctype.h>
