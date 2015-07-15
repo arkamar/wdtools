@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "arg.h"
 
@@ -38,19 +39,40 @@ istime(const char * time) {
 }
 
 int
+gettime(const char * digit) {
+	int hour, min, sec;
+	hour = min = sec = 0;
+	switch (sscanf(digit, "%2d:%2d:%2d", &hour, &min, &sec)) {
+	case 1:
+		return hour * 3600;
+	case 2:
+		return hour * 3600 + min * 60;
+	case 3:
+		return hour * 3600 + min * 60 + sec;
+	default:
+		break;
+	}
+	return -1;
+}
+
+int
 istask(const char * line) {
 	char * ob; /* open bracket */
+	int start, stop;
 	if ((ob = strchr(line, '('))) {
-		if (istime(ob + 1)
+		if ((start = gettime(ob + 1)) >= 0
 				&& ob[6] == '-') {
-			if (istime(ob + 7) && ob[12] == ')') {
-				return 1;
+			if ((stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
+				return stop - start;
 			} else if (ob[7] == ')') {
-				return 2;
+				time_t t;
+				time(&t);
+				struct tm * tm = localtime(&t);
+				return tm->tm_sec + tm->tm_min * 60 + tm->tm_hour * 3600 - start;
 			}
 		}
 	}
-	return 0;
+	return -1;
 }
 
 int
@@ -65,8 +87,9 @@ main(int argc, char *argv[]) {
 	} ARGEND;
 
 	while (getline(&buf, &size, fp) > 0) {
-		if (istask(buf))
-			printf("%s", buf);
+		int time;
+		if ((time = istask(buf)) >= 0)
+			printf("% 6d %s", time, buf);
 	}
 
 	free(buf);
