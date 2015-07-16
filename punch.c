@@ -119,6 +119,23 @@ getlabelid(const char * line) {
 }
 
 int
+getdayid(const char * line) {
+	int a;
+	if (sscanf(line, "%d.%d.%d -", &a, &a, &a) != 3)
+		return -1;
+	char * hyp = strchr(line, '-');
+	if (!hyp)
+		return -1;
+	int i;
+	for (i = 0; i < LENGTH(daynames); i++) {
+		int ret;
+		if (!(ret = strncmp(hyp + 2, daynames[i], strlen(daynames[i]))))
+			break;
+	}
+	return (i < LENGTH(daynames)) ? i : -1;
+}
+
+int
 main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
@@ -135,7 +152,10 @@ main(int argc, char *argv[]) {
 		if ((time = istask(buf)) >= 0) {
 			int i = getlabelid(buf);
 			printf("% 6d %2s %2d %c\n", time, buf, i, convert[i].mark);
+			continue;
 		}
+		if ((day = getdayid(buf)) >= 0)
+			printf("%s", buf);
 	}
 
 	for (day = 0; day < LENGTH(daynames); day++)
