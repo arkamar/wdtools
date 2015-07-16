@@ -45,6 +45,9 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
+float bin = 1.0;
+int columns = 9;
+
 char *argv0;
 
 static void
