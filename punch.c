@@ -50,8 +50,9 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
-int bin = 3600;
-int columns = 9;
+const int bin = 1 * 3600;
+const int size = 24 * bin / 3600;
+const int columns = 9;
 
 char *argv0;
 
