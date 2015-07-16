@@ -94,6 +94,7 @@ istask(const char * line) {
 	if ((ob = strchr(line, '('))) {
 		if ((start = gettime(ob + 1)) >= 0
 				&& ob[6] == '-') {
+			ob[0] = '\0';
 			if ((stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
 				return stop - start;
 			} else if (ob[7] == ')') {
@@ -105,6 +106,16 @@ istask(const char * line) {
 		}
 	}
 	return -1;
+}
+
+int
+getlabelid(const char * line) {
+	int i;
+	for (i = 0; i < LENGTH(convert) - 1; i++) {
+		if (!strcmp(convert[i].label, line))
+			break;
+	}
+	return i;
 }
 
 int
@@ -121,8 +132,10 @@ main(int argc, char *argv[]) {
 
 	while (getline(&buf, &size, fp) > 0) {
 		int time;
-		if ((time = istask(buf)) >= 0)
-			printf("% 6d %s", time, buf);
+		if ((time = istask(buf)) >= 0) {
+			int i = getlabelid(buf);
+			printf("% 6d %2s %2d %c\n", time, buf, i, convert[i].mark);
+		}
 	}
 
 	for (day = 0; day < LENGTH(daynames); day++)
