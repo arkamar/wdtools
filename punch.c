@@ -12,6 +12,11 @@
 
 #define LENGTH(X) (sizeof(X) / sizeof(X[0]))
 
+struct interval {
+	int start;
+	int stop;
+};
+
 char * daynames[] = {
 	"Monday",
 	"Tuesday",
@@ -45,7 +50,7 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
-float bin = 1.0;
+int bin = 3600;
 int columns = 9;
 
 char *argv0;
@@ -91,20 +96,20 @@ gettime(const char * digit) {
 }
 
 int
-istask(const char * line) {
+istask(const char * line, struct interval * in) {
 	char * ob; /* open bracket */
-	int start, stop;
 	if ((ob = strchr(line, '('))) {
-		if ((start = gettime(ob + 1)) >= 0
+		if ((in->start = gettime(ob + 1)) >= 0
 				&& ob[6] == '-') {
 			ob[0] = '\0';
-			if ((stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
-				return stop - start;
+			if ((in->stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
+				return in->stop - in->start;
 			} else if (ob[7] == ')') {
 				time_t t;
 				time(&t);
 				struct tm * tm = localtime(&t);
-				return tm->tm_sec + tm->tm_min * 60 + tm->tm_hour * 3600 - start;
+				in->stop = tm->tm_sec + tm->tm_min * 60 + tm->tm_hour * 3600;
+				return in->stop - in->start;
 			}
 		}
 	}
@@ -152,9 +157,10 @@ main(int argc, char *argv[]) {
 
 	while (getline(&buf, &size, fp) > 0) {
 		int time;
-		if ((time = istask(buf)) >= 0) {
+		struct interval in;
+		if ((time = istask(buf, &in)) >= 0) {
 			int i = getlabelid(buf);
-			printf("% 6d %2s %2d %c\n", time, buf, i, convert[i].mark);
+			printf("% 6d %2s %2d %c %d %d\n", time, buf, i, convert[i].mark, in.start / bin, in.stop / bin);
 			continue;
 		}
 		if ((day = getdayid(buf)) >= 0)
