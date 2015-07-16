@@ -41,6 +41,8 @@ struct labels convert[] = {
 	{ "ph", 'P' },
 	{ "le", '+' },
 	{ "a",  'a' },
+	/* UNKNOWN MUST be last */
+	{ "UNKNOWN", '.' },
 };
 
 char *argv0;
