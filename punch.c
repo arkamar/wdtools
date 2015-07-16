@@ -22,6 +22,27 @@ char * daynames[] = {
 	"Sunday"
 };
 
+struct labels {
+	char * label;
+	char mark;
+};
+
+struct labels convert[] = {
+	{ "wd", 'w' },
+	{ "L",  'L' },
+	{ "k",  'k' },
+	{ "p",  'p' },
+	{ "!t", 't' },
+	{ "!",  '-' },
+	{ "!u", 'u' },
+	{ "",   '+' },
+	{ "ui", 'G' },
+	{ "sp", 's' },
+	{ "ph", 'P' },
+	{ "le", '+' },
+	{ "a",  'a' },
+};
+
 char *argv0;
 
 static void
