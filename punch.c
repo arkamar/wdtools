@@ -120,6 +120,7 @@ istask(const char * line, struct interval * in) {
 int
 getlabelid(const char * line) {
 	int i;
+	/* -1 because the last one is UNKNOWN */
 	for (i = 0; i < LENGTH(convert) - 1; i++) {
 		if (!strcmp(convert[i].label, line))
 			break;
