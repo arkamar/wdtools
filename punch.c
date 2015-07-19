@@ -51,7 +51,7 @@ struct labels convert[] = {
 };
 
 const int bin = 1 * 3600;
-const int size = 24 * bin / 3600;
+const int arrsize = 24 * bin / 3600;
 const int columns = 9;
 
 char *argv0;
@@ -145,6 +145,21 @@ getdayid(const char * line) {
 	return (i < LENGTH(daynames)) ? i : -1;
 }
 
+static unsigned short * data;
+
+#define IDX(day, bin, label)	((day) * arrsize * LENGTH(convert) \
+		+ (bin) * LENGTH(convert) + (label))
+
+void
+set(const int day, const int ibin, const int label, const unsigned short value) {
+	data[IDX(day, ibin, label)] += value;
+}
+
+unsigned short
+get(const int day, const int ibin, const int label) {
+	return data[IDX(day, ibin, label)];
+}
+
 int
 main(int argc, char *argv[]) {
 	FILE *fp = stdin;
@@ -157,21 +172,46 @@ main(int argc, char *argv[]) {
 		usage();
 	} ARGEND;
 
+	fprintf(stderr, "DATA_SIZE: %d\n",
+		arrsize * LENGTH(convert) * LENGTH(daynames)
+		* sizeof(unsigned short));
+	data = calloc(arrsize * LENGTH(convert) * LENGTH(daynames),
+		sizeof(unsigned short));
+	if (!data)
+		fprintf(stderr, "Shit, I cannot calloc\n");
+
 	while (getline(&buf, &size, fp) > 0) {
 		int time;
 		struct interval in;
 		if ((time = istask(buf, &in)) >= 0) {
 			int i = getlabelid(buf);
-			printf("% 6d %2s %2d %c %d %d\n", time, buf, i, convert[i].mark, in.start / bin, in.stop / bin);
+			set(day, in.start / bin, i, 1);
 			continue;
 		}
-		if ((day = getdayid(buf)) >= 0)
-			printf("%s", buf);
+		int rd;
+		if ((rd = getdayid(buf)) >= 0) {
+			day = rd;
+			memset(data + day * arrsize * LENGTH(convert), 0, arrsize *LENGTH(convert) * sizeof(unsigned short));
+		}
+	}
+	printf("\n");
+
+	int i;
+	for (i = 0, day = 0; day < LENGTH(daynames); day++) {
+		printf("%-9s %2d :", daynames[day], day);
+		for (int ibin = 0; ibin < arrsize; ibin++) {
+			for (int label = 0; label < LENGTH(convert); label++) {
+				int c;
+				c = get(day, ibin, label);
+				if (c)
+				printf("%c", convert[label].mark);
+			}
+			printf(" ");
+		}
+		printf("\n");
 	}
 
-	for (day = 0; day < LENGTH(daynames); day++)
-		printf("%-9s %2d :\n", daynames[day], day);
-
+	free(data);
 	free(buf);
 	return EXIT_SUCCESS;
 }
