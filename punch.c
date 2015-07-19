@@ -57,6 +57,7 @@ static const int arrsize = 24 * bin / 3600;
 static const int columns = 9;
 
 static unsigned short * data;
+static unsigned short weekcounter[LENGTH(daynames)];
 
 
 char *argv0;
@@ -192,6 +193,7 @@ main(int argc, char *argv[]) {
 		if ((rd = getdayid(buf)) >= 0) {
 			day = rd;
 			memset(data + day * arrsize * LENGTH(convert), 0, arrsize *LENGTH(convert) * sizeof(unsigned short));
+			weekcounter[day] = 1;
 		}
 	}
 	printf("\n");
