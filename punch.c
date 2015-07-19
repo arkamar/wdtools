@@ -152,8 +152,14 @@ getdayid(const char * line) {
 }
 
 void
-set(const int day, const int ibin, const int label, const unsigned short value) {
-	data[IDX(day, ibin, label)] += value;
+set(const int day, const struct interval * interval, const int label) {
+	int i, tmp;
+	tmp = interval->start;
+	for (i = interval->start / bin; i < interval->stop / bin; i++) {
+		data[IDX(day, i / bin, label)] += (i + 1) * bin - tmp;
+		tmp = (i + 1) * bin;
+	}
+	data[IDX(day, interval->stop / bin, label)] += interval->stop - tmp;
 }
 
 unsigned short
@@ -183,10 +189,10 @@ main(int argc, char *argv[]) {
 
 	while (getline(&buf, &size, fp) > 0) {
 		int time;
-		struct interval in;
-		if ((time = istask(buf, &in)) >= 0) {
-			int i = getlabelid(buf);
-			set(day, in.start / bin, i, 1);
+		struct interval interval;
+		if ((time = istask(buf, &interval)) >= 0) {
+			const int label = getlabelid(buf);
+			set(day, &interval, label);
 			continue;
 		}
 		int rd;
