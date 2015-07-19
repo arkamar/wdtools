@@ -11,6 +11,8 @@
 #include "arg.h"
 
 #define LENGTH(X) (sizeof(X) / sizeof(X[0]))
+#define IDX(day, bin, label)	((day) * arrsize * LENGTH(convert) \
+		+ (bin) * LENGTH(convert) + (label))
 
 struct interval {
 	int start;
@@ -50,9 +52,12 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
-const int bin = 1 * 3600;
-const int arrsize = 24 * bin / 3600;
-const int columns = 9;
+static const int bin = 1 * 3600;
+static const int arrsize = 24 * bin / 3600;
+static const int columns = 9;
+
+static unsigned short * data;
+
 
 char *argv0;
 
@@ -144,11 +149,6 @@ getdayid(const char * line) {
 	}
 	return (i < LENGTH(daynames)) ? i : -1;
 }
-
-static unsigned short * data;
-
-#define IDX(day, bin, label)	((day) * arrsize * LENGTH(convert) \
-		+ (bin) * LENGTH(convert) + (label))
 
 void
 set(const int day, const int ibin, const int label, const unsigned short value) {
