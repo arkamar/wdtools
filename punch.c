@@ -52,9 +52,20 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
-int inmin  = 0;
-int insec  = 0;
-int inhour = 0;
+static int getdayid(const char * line);
+static int getlabelid(const char * line);
+static int gettime(const char * digit);
+static int istask(const char * line, struct interval * in);
+static void initdata();
+static unsigned int now();
+static unsigned int rounded(const unsigned int x, const unsigned int y);
+static char * sec2str(unsigned int sec);
+static void set(const int day, const struct interval * interval, const int label);
+static void usage();
+
+static int inmin  = 0;
+static int insec  = 0;
+static int inhour = 0;
 static int bin = 3600;
 static int arrsize;
 static int columns = (80 - 14) / 6;
@@ -62,30 +73,12 @@ static int columns = (80 - 14) / 6;
 static unsigned short * data;
 static unsigned short daycounter[LENGTH(daynames)];
 
-
 char *argv0;
 
-static void
+void
 usage(void) {
 	fprintf(stderr, "usage: %s [-chms number]\n", argv0);
 	exit(1);
-}
-
-int
-ishour(const char * digit) {
-	return ((digit[0] == ' '
-		|| (digit[0] >= '0' && digit[0] <= '2'))
-		&& isdigit(digit[1]));
-}
-
-int
-isminut(const char * digit) {
-	return (digit[0] >= '0' && digit[0] <= '5' && isdigit(digit[1]));
-}
-
-int
-istime(const char * time) {
-	return (ishour(time) && time[2] == ':' && isminut(time + 3));
 }
 
 int
@@ -182,12 +175,8 @@ set(const int day, const struct interval * interval, const int label) {
 	data[IDX(day, interval->stop / bin, label)] += interval->stop - tmp;
 }
 
-unsigned short
-get(const int day, const int ibin, const int label) {
-	return data[IDX(day, ibin, label)];
-}
-
-unsigned int rounded(const unsigned int x, const unsigned int y) {
+unsigned int
+rounded(const unsigned int x, const unsigned int y) {
 	return x / y + ((x % y > y / 2) ? 1 : 0);
 }
 
