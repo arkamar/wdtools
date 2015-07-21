@@ -52,8 +52,11 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
-static const int bin = 1 * 3600;
-static const int arrsize = 24 * bin / 3600;
+int inmin = 0;
+int insec = 0;
+int inhour = 0;
+static int bin = 3600;
+static int arrsize;
 static int columns = 9;
 
 static unsigned short * data;
@@ -108,6 +111,17 @@ now() {
 	time(&t);
 	struct tm * tm = localtime(&t);
 	return tm->tm_sec + tm->tm_min * 60 + tm->tm_hour * 3600;
+}
+
+void
+initdata() {
+	if (insec || inmin || inhour)
+		bin = insec + inmin * 60 + inhour * 3600;
+	arrsize = 24 * 3600 / bin;
+	data = calloc(arrsize * LENGTH(convert) * LENGTH(daynames),
+		sizeof(unsigned short));
+	if (!data)
+		fprintf(stderr, "Shit, I cannot calloc\n");
 }
 
 int
@@ -194,14 +208,20 @@ main(int argc, char *argv[]) {
 	case 'c':
 		columns = atoi(EARGF(usage()));
 		break;
+	case 'h':
+		inhour = atoi(EARGF(usage()));
+		break;
+	case 'm':
+		inmin = atoi(EARGF(usage()));
+		break;
+	case 's':
+		insec = atoi(EARGF(usage()));
+		break;
 	default:
 		usage();
 	} ARGEND;
 
-	data = calloc(arrsize * LENGTH(convert) * LENGTH(daynames),
-		sizeof(unsigned short));
-	if (!data)
-		fprintf(stderr, "Shit, I cannot calloc\n");
+	initdata();
 
 	while (getline(&buf, &size, fp) > 0) {
 		int time;
