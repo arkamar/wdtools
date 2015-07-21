@@ -62,12 +62,17 @@ static unsigned int rounded(const unsigned int x, const unsigned int y);
 static char * sec2str(unsigned int sec);
 static void set(const int day, const struct interval * interval, const int label);
 static void usage();
+static void maketable(const int label);
 
 static int inmin  = 0;
 static int insec  = 0;
 static int inhour = 0;
 static int bin = 3600;
 static int arrsize;
+static int from;
+static int to;
+static char printtime = 0;
+static char printnumpart = 0;
 static int columns = (80 - 14) / 6;
 
 static unsigned short * data;
@@ -187,14 +192,38 @@ sec2str(unsigned int sec) {
 	return str;
 }
 
+void
+numtable(const int day, const int ibin, const int label) {
+	const unsigned int time = data[IDX(day, ibin, label)];
+	if (time)
+		if (printtime)
+			printf(" %5s", sec2str(time));
+		else
+			printf(" %5.1f", (float) time * 100.0 / bin);
+	else
+		printf("      ");
+}
+
+void
+maketable(const int label) {
+	int day, ibin;
+	printf("\n");
+	for (day = 0; day < LENGTH(daynames); day++) {
+		printf("%-9s %2d :", daynames[day], daycounter[day]);
+		for (ibin = from; ibin < to; ibin++) {
+			numtable(day, ibin, label);
+		}
+		printf("\n");
+	}
+}
+
 int
 main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
 	static size_t size = 0;
-	int day, label, printnumpart = 0;
+	int day, label;
 	int k, counter, ibin;
-	int printtime = 0;
 
 	ARGBEGIN {
 	case 'c':
@@ -237,8 +266,8 @@ main(int argc, char *argv[]) {
 		}
 	}
 
-	int from = now() / bin - 3;
-	int to = from + columns;
+	from = now() / bin - 3;
+	to = from + columns;
 	if (to > arrsize) {
 		to = arrsize;
 		from = to - columns;
@@ -250,21 +279,7 @@ main(int argc, char *argv[]) {
 	for (ibin = from; ibin < to; ibin++)
 		printf(" %5s", sec2str(ibin * bin));
 	if (printnumpart) {
-		printf("\n");
-		for (day = 0; day < LENGTH(daynames); day++) {
-			printf("%-9s %2d :", daynames[day], daycounter[day]);
-			for (ibin = from; ibin < to; ibin++) {
-				const unsigned int time = data[IDX(day, ibin, label)];
-				if (time)
-					if (printtime)
-						printf(" %5s", sec2str(time));
-					else
-						printf(" %5.1f", (float) time * 100.0 / bin);
-				else
-					printf("      ");
-			}
-			printf("\n");
-		}
+		maketable(label);
 	}
 	printf("\n");
 	for (day = 0; day < LENGTH(daynames); day++) {
