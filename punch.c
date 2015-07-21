@@ -156,7 +156,7 @@ set(const int day, const struct interval * interval, const int label) {
 	int i, tmp;
 	tmp = interval->start;
 	for (i = interval->start / bin; i < interval->stop / bin; i++) {
-		data[IDX(day, i / bin, label)] += (i + 1) * bin - tmp;
+		data[IDX(day, i, label)] += (i + 1) * bin - tmp;
 		tmp = (i + 1) * bin;
 	}
 	data[IDX(day, interval->stop / bin, label)] += interval->stop - tmp;
@@ -179,9 +179,6 @@ main(int argc, char *argv[]) {
 		usage();
 	} ARGEND;
 
-	fprintf(stderr, "DATA_SIZE: %d\n",
-		arrsize * LENGTH(convert) * LENGTH(daynames)
-		* sizeof(unsigned short));
 	data = calloc(arrsize * LENGTH(convert) * LENGTH(daynames),
 		sizeof(unsigned short));
 	if (!data)
@@ -198,23 +195,28 @@ main(int argc, char *argv[]) {
 		int rd;
 		if ((rd = getdayid(buf)) >= 0) {
 			day = rd;
-			memset(data + day * arrsize * LENGTH(convert), 0, arrsize *LENGTH(convert) * sizeof(unsigned short));
+			memset(data + day * arrsize * LENGTH(convert), 0, arrsize * LENGTH(convert) * sizeof(unsigned short));
 			daycounter[day] = 1;
 		}
 	}
 	printf("\n");
 
-	int i;
-	for (i = 0, day = 0; day < LENGTH(daynames); day++) {
-		printf("%-9s %2d :", daynames[day], day);
-		for (int ibin = 0; ibin < arrsize; ibin++) {
-			for (int label = 0; label < LENGTH(convert); label++) {
-				int c;
-				c = get(day, ibin, label);
-				if (c)
-				printf("%c", convert[label].mark);
-			}
+	int i, k, counter, label, ibin;
+	for (day = 0; day < LENGTH(daynames); day++) {
+		printf("%-9s %2d :", daynames[day], daycounter[day]);
+		for (ibin = 0; ibin < arrsize; ibin++) {
 			printf(" ");
+			for (counter = 0, label = 0; label < LENGTH(convert); label++) {
+				const unsigned int time = data[IDX(day, ibin, label)]
+					* 5 / bin / daycounter[day];
+				for (k = 0; k < time; k++) {
+					if (counter < 5)
+						printf("%c", convert[label].mark);
+					counter++;
+				}
+			}
+			for (; counter < 5; counter++)
+				printf(" ");
 		}
 		printf("\n");
 	}
