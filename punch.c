@@ -52,6 +52,7 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
+typedef void (*fun)(const int, const int, const int);
 static int getdayid(const char * line);
 static int getlabelid(const char * line);
 static int gettime(const char * digit);
@@ -62,7 +63,7 @@ static unsigned int rounded(const unsigned int x, const unsigned int y);
 static char * sec2str(unsigned int sec);
 static void set(const int day, const struct interval * interval, const int label);
 static void usage();
-static void maketable(const int label);
+static void maketable(const int label, const fun f);
 
 static int inmin  = 0;
 static int insec  = 0;
@@ -222,13 +223,21 @@ numtable(const int day, const int ibin, const int label) {
 }
 
 void
-maketable(const int label) {
+maketablehdr() {
+	int ibin;
+	printf("              ");
+	for (ibin = from; ibin < to; ibin++)
+		printf(" %5s", sec2str(ibin * bin));
+}
+
+void
+maketable(const int label, const fun f) {
 	int day, ibin;
 	printf("\n");
 	for (day = 0; day < LENGTH(daynames); day++) {
 		printf("%-9s %2d :", daynames[day], daycounter[day]);
 		for (ibin = from; ibin < to; ibin++) {
-			numtable(day, ibin, label);
+			f(day, ibin, label);
 		}
 		printf("\n");
 	}
@@ -240,7 +249,6 @@ main(int argc, char *argv[]) {
 	static char *buf = NULL;
 	static size_t size = 0;
 	int day, label;
-	int k, counter, ibin;
 
 	ARGBEGIN {
 	case 'c':
@@ -292,31 +300,12 @@ main(int argc, char *argv[]) {
 			from = 0;
 	}
 
-	printf("              ");
-	for (ibin = from; ibin < to; ibin++)
-		printf(" %5s", sec2str(ibin * bin));
+	maketablehdr();
 	if (printnumpart) {
-		maketable(label);
+		maketable(label, numtable);
 	}
 	printf("\n");
-	for (day = 0; day < LENGTH(daynames); day++) {
-		printf("%-9s %2d :", daynames[day], daycounter[day]);
-		for (ibin = from; ibin < to; ibin++) {
-			printf(" ");
-			for (counter = 0, label = 0; label < LENGTH(convert); label++) {
-				const unsigned int time = rounded(data[IDX(day, ibin, label)] * 5,
-					bin * daycounter[day]);
-				for (k = 0; k < time; k++) {
-					if (counter < 5)
-						printf("%c", convert[label].mark);
-					counter++;
-				}
-			}
-			for (; counter < 5; counter++)
-				printf(" ");
-		}
-		printf("\n");
-	}
+	maketable(label, marktable);
 
 	free(data);
 	free(buf);
