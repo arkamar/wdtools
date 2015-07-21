@@ -102,6 +102,14 @@ gettime(const char * digit) {
 	return -1;
 }
 
+unsigned int
+now() {
+	time_t t;
+	time(&t);
+	struct tm * tm = localtime(&t);
+	return tm->tm_sec + tm->tm_min * 60 + tm->tm_hour * 3600;
+}
+
 int
 istask(const char * line, struct interval * in) {
 	char * ob; /* open bracket */
@@ -112,10 +120,7 @@ istask(const char * line, struct interval * in) {
 			if ((in->stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
 				return in->stop - in->start;
 			} else if (ob[7] == ')') {
-				time_t t;
-				time(&t);
-				struct tm * tm = localtime(&t);
-				in->stop = tm->tm_sec + tm->tm_min * 60 + tm->tm_hour * 3600;
+				in->stop = now();
 				return in->stop - in->start;
 			}
 		}
