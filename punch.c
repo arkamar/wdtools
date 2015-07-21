@@ -67,7 +67,7 @@ char *argv0;
 
 static void
 usage(void) {
-	fprintf(stderr, "usage: %s [-c columns]\n", argv0);
+	fprintf(stderr, "usage: %s [-chms number]\n", argv0);
 	exit(1);
 }
 
