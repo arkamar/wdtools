@@ -195,6 +195,18 @@ sec2str(unsigned int sec) {
 }
 
 void
+initcolumnsinterval() {
+	from = now() / bin - 3;
+	to = from + columns;
+	if (to > arrsize) {
+		to = arrsize;
+		from = to - columns;
+		if (from < 0)
+			from = 0;
+	}
+}
+
+void
 marktable(const int day, const int ibin, const int unused) {
 	int label, counter, k;
 	printf(" ");
@@ -295,14 +307,7 @@ main(int argc, char *argv[]) {
 		}
 	}
 
-	from = now() / bin - 3;
-	to = from + columns;
-	if (to > arrsize) {
-		to = arrsize;
-		from = to - columns;
-		if (from < 0)
-			from = 0;
-	}
+	initcolumnsinterval();
 
 	maketablehdr();
 	if (printnumpart || printboth)
