@@ -193,6 +193,23 @@ sec2str(unsigned int sec) {
 }
 
 void
+marktable(const int day, const int ibin, const int unused) {
+	int label, counter, k;
+	printf(" ");
+	for (counter = 0, label = 0; label < LENGTH(convert); label++) {
+		const unsigned int time = rounded(data[IDX(day, ibin, label)] * 5,
+			bin * daycounter[day]);
+		for (k = 0; k < time; k++) {
+			if (counter < 5)
+				printf("%c", convert[label].mark);
+			counter++;
+		}
+	}
+	for (; counter < 5; counter++)
+		printf(" ");
+}
+
+void
 numtable(const int day, const int ibin, const int label) {
 	const unsigned int time = data[IDX(day, ibin, label)];
 	if (time)
