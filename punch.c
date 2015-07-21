@@ -48,7 +48,7 @@ struct labels convert[] = {
 	{ "ph", 'P' },
 	{ "le", '+' },
 	{ "a",  'a' },
-	/* UNKNOWN MUST be last */
+	/* UNKNOWN MUST be the last one */
 	{ "UNKNOWN", '.' },
 };
 
