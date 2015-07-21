@@ -202,7 +202,9 @@ main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
 	static size_t size = 0;
-	int day, label;
+	int day, label, printnumpart = 0;
+	int k, counter, ibin;
+	int printtime = 0;
 
 	ARGBEGIN {
 	case 'c':
@@ -216,6 +218,12 @@ main(int argc, char *argv[]) {
 		break;
 	case 's':
 		insec = atoi(EARGF(usage()));
+		break;
+	case 'n':
+		printnumpart = 1;
+		break;
+	case 't':
+		printtime = 1;
 		break;
 	default:
 		usage();
@@ -247,21 +255,26 @@ main(int argc, char *argv[]) {
 		if (from < 0)
 			from = 0;
 	}
-	int k, counter, ibin;
+
 	printf("              ");
 	for (ibin = from; ibin < to; ibin++)
 		printf(" %5s", sec2str(ibin * bin));
-	printf("\n");
-	for (day = 0; day < LENGTH(daynames); day++) {
-		printf("%-9s %2d :", daynames[day], daycounter[day]);
-		for (ibin = from; ibin < to; ibin++) {
-			const unsigned int time = data[IDX(day, ibin, label)];
-			if (time)
-				printf(" %5s", sec2str(time));
-			else
-				printf("      ");
-		}
+	if (printnumpart) {
 		printf("\n");
+		for (day = 0; day < LENGTH(daynames); day++) {
+			printf("%-9s %2d :", daynames[day], daycounter[day]);
+			for (ibin = from; ibin < to; ibin++) {
+				const unsigned int time = data[IDX(day, ibin, label)];
+				if (time)
+					if (printtime)
+						printf(" %5s", sec2str(time));
+					else
+						printf(" %5.1f", (float) time * 100.0 / bin);
+				else
+					printf("      ");
+			}
+			printf("\n");
+		}
 	}
 	printf("\n");
 	for (day = 0; day < LENGTH(daynames); day++) {
