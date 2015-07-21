@@ -84,7 +84,7 @@ char *argv0;
 
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-chms number]\n", argv0);
+	fprintf(stderr, "usage: %s [-bnt] [-chms number]\n", argv0);
 	exit(1);
 }
 
