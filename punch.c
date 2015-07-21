@@ -74,6 +74,7 @@ static int from;
 static int to;
 static char printtime = 0;
 static char printnumpart = 0;
+static char printboth = 0;
 static int columns = (80 - 14) / 6;
 
 static unsigned short * data;
@@ -251,6 +252,9 @@ main(int argc, char *argv[]) {
 	int day, label;
 
 	ARGBEGIN {
+	case 'b':
+		printboth = 1;
+		break;
 	case 'c':
 		columns = atoi(EARGF(usage()));
 		break;
@@ -260,11 +264,11 @@ main(int argc, char *argv[]) {
 	case 'm':
 		inmin = atoi(EARGF(usage()));
 		break;
-	case 's':
-		insec = atoi(EARGF(usage()));
-		break;
 	case 'n':
 		printnumpart = 1;
+		break;
+	case 's':
+		insec = atoi(EARGF(usage()));
 		break;
 	case 't':
 		printtime = 1;
@@ -301,11 +305,10 @@ main(int argc, char *argv[]) {
 	}
 
 	maketablehdr();
-	if (printnumpart) {
+	if (printnumpart || printboth)
 		maketable(label, numtable);
-	}
-	printf("\n");
-	maketable(label, marktable);
+	if (!printnumpart || printboth)
+		maketable(label, marktable);
 
 	free(data);
 	free(buf);
