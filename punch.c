@@ -176,6 +176,13 @@ unsigned int rounded(const unsigned int x, const unsigned int y) {
 	return x / y + ((x % y > y / 2) ? 1 : 0);
 }
 
+char *
+sec2str(unsigned int sec) {
+	static char str[16];
+	sprintf(str, "%d:%02d", sec / 3600, sec % 3600 / 60);
+	return str;
+}
+
 int
 main(int argc, char *argv[]) {
 	FILE *fp = stdin;
@@ -208,9 +215,12 @@ main(int argc, char *argv[]) {
 			daycounter[day] = 1;
 		}
 	}
-	printf("\n");
 
 	int i, k, counter, label, ibin;
+	printf("              ");
+	for (ibin = 7; ibin < arrsize; ibin++)
+		printf(" %5s", sec2str(ibin * bin));
+	printf("\n");
 	for (day = 0; day < LENGTH(daynames); day++) {
 		printf("%-9s %2d :", daynames[day], daycounter[day]);
 		for (ibin = 7; ibin < arrsize; ibin++) {
