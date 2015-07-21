@@ -52,12 +52,12 @@ struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
-int inmin = 0;
-int insec = 0;
+int inmin  = 0;
+int insec  = 0;
 int inhour = 0;
 static int bin = 3600;
 static int arrsize;
-static int columns = 9;
+static int columns = (80 - 14) / 6;
 
 static unsigned short * data;
 static unsigned short daycounter[LENGTH(daynames)];
@@ -202,7 +202,7 @@ main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
 	static size_t size = 0;
-	int day;
+	int day, label;
 
 	ARGBEGIN {
 	case 'c':
@@ -227,7 +227,7 @@ main(int argc, char *argv[]) {
 		int time;
 		struct interval interval;
 		if ((time = istask(buf, &interval)) >= 0) {
-			const int label = getlabelid(buf);
+			label = getlabelid(buf);
 			set(day, &interval, label);
 			continue;
 		}
@@ -247,10 +247,22 @@ main(int argc, char *argv[]) {
 		if (from < 0)
 			from = 0;
 	}
-	int i, k, counter, label, ibin;
+	int k, counter, ibin;
 	printf("              ");
 	for (ibin = from; ibin < to; ibin++)
 		printf(" %5s", sec2str(ibin * bin));
+	printf("\n");
+	for (day = 0; day < LENGTH(daynames); day++) {
+		printf("%-9s %2d :", daynames[day], daycounter[day]);
+		for (ibin = from; ibin < to; ibin++) {
+			const unsigned int time = data[IDX(day, ibin, label)];
+			if (time)
+				printf(" %5s", sec2str(time));
+			else
+				printf("      ");
+		}
+		printf("\n");
+	}
 	printf("\n");
 	for (day = 0; day < LENGTH(daynames); day++) {
 		printf("%-9s %2d :", daynames[day], daycounter[day]);
