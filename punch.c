@@ -216,14 +216,16 @@ main(int argc, char *argv[]) {
 		}
 	}
 
+	int from = now() / bin - 3;
+	int to = from + columns;
 	int i, k, counter, label, ibin;
 	printf("              ");
-	for (ibin = 7; ibin < arrsize; ibin++)
+	for (ibin = from; ibin < to; ibin++)
 		printf(" %5s", sec2str(ibin * bin));
 	printf("\n");
 	for (day = 0; day < LENGTH(daynames); day++) {
 		printf("%-9s %2d :", daynames[day], daycounter[day]);
-		for (ibin = 7; ibin < arrsize; ibin++) {
+		for (ibin = from; ibin < to; ibin++) {
 			printf(" ");
 			for (counter = 0, label = 0; label < LENGTH(convert); label++) {
 				const unsigned int time = rounded(data[IDX(day, ibin, label)] * 5,
