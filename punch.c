@@ -130,6 +130,7 @@ istask(const char * line, struct interval * in) {
 	if ((ob = strchr(line, '('))) {
 		if ((in->start = gettime(ob + 1)) >= 0
 				&& ob[6] == '-') {
+			/* hack to speedup label search */
 			ob[0] = '\0';
 			if ((in->stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
 				return in->stop - in->start;
