@@ -197,12 +197,14 @@ sec2str(unsigned int sec) {
 void
 initcolumnsinterval() {
 	from = now() / bin - 3;
+	if (columns > arrsize)
+		columns = arrsize;
+	if (from < 0)
+		from = 0;
 	to = from + columns;
 	if (to > arrsize) {
 		to = arrsize;
 		from = to - columns;
-		if (from < 0)
-			from = 0;
 	}
 }
 
