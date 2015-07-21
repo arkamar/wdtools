@@ -167,6 +167,10 @@ get(const int day, const int ibin, const int label) {
 	return data[IDX(day, ibin, label)];
 }
 
+unsigned int rounded(const unsigned int x, const unsigned int y) {
+	return x / y + ((x % y > y / 2) ? 1 : 0);
+}
+
 int
 main(int argc, char *argv[]) {
 	FILE *fp = stdin;
@@ -204,11 +208,11 @@ main(int argc, char *argv[]) {
 	int i, k, counter, label, ibin;
 	for (day = 0; day < LENGTH(daynames); day++) {
 		printf("%-9s %2d :", daynames[day], daycounter[day]);
-		for (ibin = 0; ibin < arrsize; ibin++) {
+		for (ibin = 7; ibin < arrsize; ibin++) {
 			printf(" ");
 			for (counter = 0, label = 0; label < LENGTH(convert); label++) {
-				const unsigned int time = data[IDX(day, ibin, label)]
-					* 5 / bin / daycounter[day];
+				const unsigned int time = rounded(data[IDX(day, ibin, label)] * 5,
+					bin * daycounter[day]);
 				for (k = 0; k < time; k++) {
 					if (counter < 5)
 						printf("%c", convert[label].mark);
