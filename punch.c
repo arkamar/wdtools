@@ -54,7 +54,7 @@ struct labels convert[] = {
 
 static const int bin = 1 * 3600;
 static const int arrsize = 24 * bin / 3600;
-static const int columns = 9;
+static int columns = 9;
 
 static unsigned short * data;
 static unsigned short daycounter[LENGTH(daynames)];
@@ -64,7 +64,7 @@ char *argv0;
 
 static void
 usage(void) {
-	fprintf(stderr, "usage: %s [-c] [-n nick]\n", argv0);
+	fprintf(stderr, "usage: %s [-c columns]\n", argv0);
 	exit(1);
 }
 
@@ -191,6 +191,9 @@ main(int argc, char *argv[]) {
 	int day;
 
 	ARGBEGIN {
+	case 'c':
+		columns = atoi(EARGF(usage()));
+		break;
 	default:
 		usage();
 	} ARGEND;
@@ -218,6 +221,12 @@ main(int argc, char *argv[]) {
 
 	int from = now() / bin - 3;
 	int to = from + columns;
+	if (to > arrsize) {
+		to = arrsize;
+		from = to - columns;
+		if (from < 0)
+			from = 0;
+	}
 	int i, k, counter, label, ibin;
 	printf("              ");
 	for (ibin = from; ibin < to; ibin++)
