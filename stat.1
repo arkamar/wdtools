@@ -1,0 +1,45 @@
+.de FN
+\fI\|\\$1\|\fP\\$2
+..
+.TH stat 23 "July 2015"
+.SH NAME
+stat \- work-diary statistics
+
+.SH SYNOPSIS
+.B stat
+.RB [ \-dmtw ]
+.RB [ \- ceM
+.RB NUMBER ]
+
+.SH DESCRIPTION
+.B stat
+reads work diary from standard input and prints statistics to the standard output.
+
+.SH OPTIONS
+.TP
+.BI \-c " COLS"
+Number of columns COLS to print.
+.TP
+.BI \-d
+Print day status for previous day when new day starts.
+.TP
+.BI \-e " EFFICIENCY"
+Working efficiency in percent.
+.TP
+.BI \-M " MONEY"
+Money per hour.
+.TP
+.BI \-m
+Print month status for previous month when new month starts.
+.TP
+.BI \-t
+Print tasks.
+.TP
+.BI \-w
+Print week status for previous week when new week starts.
+.TP
+.BI \-c " COLUMNS"
+Number of COLUMNS to print.
+
+.SH AUTHORS
+Copyright \(co 2015 by Petr Vaněk <arkamar@atlas.cz>
