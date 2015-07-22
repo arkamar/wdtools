@@ -54,6 +54,8 @@ initdata() {
 		sizeof(unsigned short));
 	if (!data)
 		fprintf(stderr, "Shit, I cannot calloc\n");
+	for (int i = 0; i < LENGTH(daycounter); i++)
+		daycounter[i] = 1;
 }
 
 char *
@@ -150,7 +152,7 @@ main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
 	static size_t size = 0;
-	int day, label;
+	int label, day = 0;
 
 	ARGBEGIN {
 	case 'b':
