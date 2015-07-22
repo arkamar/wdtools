@@ -11,7 +11,7 @@ SRC = ${BIN:=.c}
 all: options ${BIN}
 
 ${BIN}: ${@:=.o}
-${OBJ}: config.mk
+${OBJ}: config.mk config.h
 
 options:
 	@echo ${NAME} build options:
