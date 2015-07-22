@@ -88,7 +88,7 @@ static char * sec2str(unsigned int sec);
 static void set(const unsigned int time, const int label);
 static void usage();
 
-static int columns = 9;
+static unsigned int columns = 9;
 
 static struct arrays {
 	unsigned int * day;
@@ -289,6 +289,8 @@ main(int argc, char *argv[]) {
 	ARGBEGIN {
 	case 'c':
 		columns = atoi(EARGF(usage()));
+		if (columns > LENGTH(convert))
+			columns = LENGTH(convert);
 		break;
 	default:
 		usage();
