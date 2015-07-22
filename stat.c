@@ -384,8 +384,10 @@ main(int argc, char *argv[]) {
 			memset(data.month, 0, LENGTH(convert) * sizeof(int));
 			continue;
 		}
-		if (!strncmp(buf, "+++", 3))
+		if (!strncmp(buf, "+++", 3)) {
+			printtopay(workingtime / 3600.0);
 			workingtime = 0;
+		}
 	}
 
 	printdaystat();
