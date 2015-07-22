@@ -177,6 +177,7 @@ main(int argc, char *argv[]) {
 	static char *buf = NULL;
 	static size_t size = 0;
 	int label, workingtime = 0;
+	const unsigned int procrastination = getlabelid("!*");
 
 	ARGBEGIN {
 	case 'c':
@@ -224,7 +225,7 @@ main(int argc, char *argv[]) {
 			set(interval.stop - interval.start, label);
 			set(interval.stop - interval.start, 0);
 			if (strchr(buf, '!'))
-				set(interval.stop - interval.start, 1);
+				set(interval.stop - interval.start, procrastination);
 			if (buf[0] == '\0')
 				workingtime += interval.stop - interval.start;
 			continue;
