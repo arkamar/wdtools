@@ -69,12 +69,21 @@ static const struct labels convert[] = {
 	{ "UNKNOWN", '.' },
 };
 
+static void freedata();
 static int getdayid(const char * line);
 static int getlabelid(const char * line);
 static int gettime(const char * digit);
+static int isnewmonth(const char * line);
 static char * istask(const char * line, struct interval * in);
 static void initdata();
 static unsigned int now();
+static void printdaystat();
+static void printweekstat();
+static void printmonthstat();
+static void printyearstat();
+static void printstatline(const char * label, const unsigned int * array, const float divisor);
+static void printpercstatline(const char * label, const unsigned int * array);
+static void printlabels();
 static char * sec2str(unsigned int sec);
 static void set(const unsigned int time, const int label);
 static void usage();
