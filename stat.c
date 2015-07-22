@@ -79,10 +79,6 @@ static char * sec2str(unsigned int sec);
 static void set(const unsigned int time, const int label);
 static void usage();
 
-static int bin = 3600;
-static int arrsize;
-static int from;
-static int to;
 static int columns = 9;
 
 static unsigned int * day;
@@ -192,20 +188,6 @@ getdayid(const char * line) {
 			break;
 	}
 	return (i < LENGTH(daynames)) ? i : -1;
-}
-
-void
-initcolumnsinterval() {
-	from = now() / bin - 3;
-	if (columns > arrsize)
-		columns = arrsize;
-	if (from < 0)
-		from = 0;
-	to = from + columns;
-	if (to > arrsize) {
-		to = arrsize;
-		from = to - columns;
-	}
 }
 
 char *
