@@ -49,7 +49,7 @@ struct labels {
 	char mark;
 };
 
-struct labels convert[] = {
+static const struct labels convert[] = {
 	{ "all",' ' },
 	{ "!*", ' ' },
 	{ "wd", 'w' },
@@ -79,16 +79,10 @@ static char * sec2str(unsigned int sec);
 static void set(const unsigned int time, const int label);
 static void usage();
 
-static int inmin  = 0;
-static int insec  = 0;
-static int inhour = 0;
 static int bin = 3600;
 static int arrsize;
 static int from;
 static int to;
-static char printtime = 0;
-static char printnumpart = 0;
-static char printboth = 0;
 static int columns = 9;
 
 static unsigned int * day;
@@ -279,6 +273,7 @@ printweekstat() {
 
 void
 printdaystat() {
+	printlabels();
 	printstatline("%DS", day, 3600.0);
 	printpercstatline("%DP", day);
 }
@@ -299,27 +294,6 @@ main(int argc, char *argv[]) {
 	int label;
 
 	ARGBEGIN {
-	case 'b':
-		printboth = 1;
-		break;
-	case 'c':
-		columns = atoi(EARGF(usage()));
-		break;
-	case 'h':
-		inhour = atoi(EARGF(usage()));
-		break;
-	case 'm':
-		inmin = atoi(EARGF(usage()));
-		break;
-	case 'n':
-		printnumpart = 1;
-		break;
-	case 's':
-		insec = atoi(EARGF(usage()));
-		break;
-	case 't':
-		printtime = 1;
-		break;
 	default:
 		usage();
 	} ARGEND;
@@ -337,7 +311,7 @@ main(int argc, char *argv[]) {
 			printf("%s", time);
 			if (tmp[-1] == '-')
 				printf("%s", sec2str(interval.stop));
-			printf(") %.2f%s", (interval.stop - interval.start) / 3600.0, tmp + 1);
+			printf(") %.2f:%s", (interval.stop - interval.start) / 3600.0, tmp + 1);
 			set(interval.stop - interval.start, label);
 			set(interval.stop - interval.start, 0);
 			if (strchr(buf, '!'))
@@ -363,7 +337,6 @@ main(int argc, char *argv[]) {
 		}
 	}
 
-	printlabels();
 	printdaystat();
 	printf("\n");
 	printweekstat();
