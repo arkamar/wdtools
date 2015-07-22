@@ -22,16 +22,19 @@ static void set(const int day, const struct interval * interval, const int label
 static void usage();
 static void maketable(const int label, const fun f);
 
-static int inmin  = 0;
-static int insec  = 0;
-static int inhour = 0;
+static struct opt {
+	char inmin;
+	char insec;
+	char inhour;
+#define F_PRINT_BOTH  0x01
+#define F_PRINT_NUM   0x02
+#define F_PRINT_TIME  0x04
+	unsigned char flags;
+} options;
 static int bin = 3600;
 static int arrsize;
 static int from;
 static int to;
-static char printtime = 0;
-static char printnumpart = 0;
-static char printboth = 0;
 static int columns = (80 - 14) / 6;
 
 static unsigned short * data;
@@ -47,8 +50,8 @@ usage(void) {
 
 void
 initdata() {
-	if (insec || inmin || inhour)
-		bin = insec + inmin * 60 + inhour * 3600;
+	if (options.insec || options.inmin || options.inhour)
+		bin = options.insec + options.inmin * 60 + options.inhour * 3600;
 	arrsize = 24 * 3600 / bin;
 	data = calloc(arrsize * LENGTH(convert) * LENGTH(daynames),
 		sizeof(unsigned short));
@@ -118,7 +121,7 @@ void
 numtable(const int day, const int ibin, const int label) {
 	const unsigned int time = data[IDX(day, ibin, label)];
 	if (time)
-		if (printtime)
+		if (options.flags & F_PRINT_TIME)
 			printf(" %5s", sec2str(time));
 		else
 			printf(" %5.1f", (float) time * 100.0 / bin);
@@ -156,25 +159,25 @@ main(int argc, char *argv[]) {
 
 	ARGBEGIN {
 	case 'b':
-		printboth = 1;
+		options.flags |= F_PRINT_BOTH;
 		break;
 	case 'c':
 		columns = atoi(EARGF(usage()));
 		break;
 	case 'h':
-		inhour = atoi(EARGF(usage()));
+		options.inhour = atoi(EARGF(usage()));
 		break;
 	case 'm':
-		inmin = atoi(EARGF(usage()));
+		options.inmin = atoi(EARGF(usage()));
 		break;
 	case 'n':
-		printnumpart = 1;
+		options.flags |= F_PRINT_NUM;
 		break;
 	case 's':
-		insec = atoi(EARGF(usage()));
+		options.insec = atoi(EARGF(usage()));
 		break;
 	case 't':
-		printtime = 1;
+		options.flags |= F_PRINT_TIME;
 		break;
 	default:
 		usage();
@@ -201,9 +204,9 @@ main(int argc, char *argv[]) {
 	initcolumnsinterval();
 
 	maketablehdr();
-	if (printnumpart || printboth)
+	if (options.flags & (F_PRINT_NUM | F_PRINT_BOTH))
 		maketable(label, numtable);
-	if (!printnumpart || printboth)
+	if (!(options.flags & F_PRINT_NUM) || options.flags & F_PRINT_BOTH)
 		maketable(label, marktable);
 
 	free(data);
