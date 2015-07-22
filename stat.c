@@ -90,6 +90,15 @@ static void usage();
 
 static unsigned int columns = 9;
 
+static struct options {
+	unsigned int mph; /* money per hour */
+#define F_PRINT_TASK  0x01
+#define F_DAY_STAT    0x02
+#define F_WEEK_STAT   0x04
+#define F_MONTH_STAT  0x08
+	unsigned char flags;
+} options;
+
 static struct arrays {
 	unsigned int * day;
 	unsigned int * week;
@@ -101,7 +110,7 @@ char *argv0;
 
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-c number]\n", argv0);
+	fprintf(stderr, "usage: %s [-dmtw] [-c number]\n", argv0);
 	exit(1);
 }
 
@@ -292,6 +301,18 @@ main(int argc, char *argv[]) {
 		if (columns > LENGTH(convert))
 			columns = LENGTH(convert);
 		break;
+	case 'd':
+		options.flags |= F_DAY_STAT;
+		break;
+	case 'm':
+		options.flags |= F_MONTH_STAT;
+		break;
+	case 't':
+		options.flags |= F_PRINT_TASK;
+		break;
+	case 'w':
+		options.flags |= F_WEEK_STAT;
+		break;
 	default:
 		usage();
 	} ARGEND;
@@ -303,13 +324,14 @@ main(int argc, char *argv[]) {
 		struct interval interval;
 		if ((time = istask(buf, &interval))) {
 			label = getlabelid(buf);
-			printf("%-2s(", buf);
 			char * tmp = strchr(time, ')');
 			tmp[0] = '\0';
-			printf("%s", time);
-			if (tmp[-1] == '-')
-				printf("%s", sec2str(interval.stop));
-			printf(") %.2f:%s", (interval.stop - interval.start) / 3600.0, tmp + 1);
+			if (options.flags & F_PRINT_TASK) {
+				printf("%-2s(%s", buf, time);
+				if (tmp[-1] == '-')
+					printf("%s", sec2str(interval.stop));
+				printf(") %.2f:%s", (interval.stop - interval.start) / 3600.0, tmp + 1);
+			}
 			set(interval.stop - interval.start, label);
 			set(interval.stop - interval.start, 0);
 			if (strchr(buf, '!'))
@@ -318,18 +340,22 @@ main(int argc, char *argv[]) {
 		}
 		int rd;
 		if ((rd = getdayid(buf)) >= 0) {
-			printdaystat();
-			printf("%s", buf);
+			if (options.flags & F_DAY_STAT)
+				printdaystat();
+			if (options.flags & F_PRINT_TASK)
+				printf("%s", buf);
 			memset(data.day, 0, LENGTH(convert) * sizeof(unsigned int));
 			continue;
 		}
 		if (strstr(buf, "WEEK")) {
-			printweekstat();
+			if (options.flags & F_WEEK_STAT)
+				printweekstat();
 			memset(data.week, 0, LENGTH(convert) * sizeof(unsigned int));
 			continue;
 		}
 		if (isnewmonth(buf)) {
-			printmonthstat();
+			if (options.flags & F_MONTH_STAT)
+				printmonthstat();
 			memset(data.month, 0, LENGTH(convert) * sizeof(unsigned int));
 			continue;
 		}
