@@ -92,6 +92,7 @@ static unsigned int columns = 9;
 
 static struct options {
 	unsigned int mph; /* money per hour */
+	unsigned int efc; /* working efficiency */
 #define F_PRINT_TASK  0x01
 #define F_DAY_STAT    0x02
 #define F_WEEK_STAT   0x04
@@ -282,12 +283,17 @@ printdaystat() {
 
 void
 printpayline(const char * label, const float time) {
-	printf("%s %.2f\n", label, time);
+	if (options.efc)
+		printf("%s %.2f (%.2f)\n", label, time, time * 100.0 / options.efc);
+	else
+		printf("%s %.2f\n", label, time);
 }
 
 void
 printtopay(const float time) {
 	printpayline("--- To pay:", time);
+	if (options.mph)
+		printpayline("-M- To pay:", time * options.mph);
 }
 
 void
@@ -303,7 +309,7 @@ main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
 	static size_t size = 0;
-	int label;
+	int label, workingtime = 0;
 
 	ARGBEGIN {
 	case 'c':
@@ -311,11 +317,17 @@ main(int argc, char *argv[]) {
 		if (columns > LENGTH(convert))
 			columns = LENGTH(convert);
 		break;
+	case 'e':
+		options.efc = atoi(EARGF(usage()));
+		break;
 	case 'd':
 		options.flags |= F_DAY_STAT;
 		break;
 	case 'm':
 		options.flags |= F_MONTH_STAT;
+		break;
+	case 'M':
+		options.mph = atoi(EARGF(usage()));
 		break;
 	case 't':
 		options.flags |= F_PRINT_TASK;
@@ -346,6 +358,8 @@ main(int argc, char *argv[]) {
 			set(interval.stop - interval.start, 0);
 			if (strchr(buf, '!'))
 				set(interval.stop - interval.start, 1);
+			if (buf[0] == '\0')
+				workingtime += interval.stop - interval.start;
 			continue;
 		}
 		int rd;
@@ -369,6 +383,8 @@ main(int argc, char *argv[]) {
 			memset(data.month, 0, LENGTH(convert) * sizeof(int));
 			continue;
 		}
+		if (!strncmp(buf, "+++", 3))
+			workingtime = 0;
 	}
 
 	printdaystat();
@@ -378,7 +394,7 @@ main(int argc, char *argv[]) {
 	printmonthstat();
 	printf("\n");
 	printyearstat();
-	printtopay(1.0);
+	printtopay(workingtime / 3600.0);
 
 	freedata();
 	free(buf);
