@@ -176,6 +176,8 @@ getdayid(const char * line) {
 void
 set(const int day, const struct interval * interval, const int label) {
 	int i, tmp;
+	if ((interval->stop - interval->start) < 0)
+		return;
 	tmp = interval->start;
 	for (i = interval->start / bin; i < interval->stop / bin; i++) {
 		data[IDX(day, i, label)] += (i + 1) * bin - tmp;
