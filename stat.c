@@ -281,6 +281,16 @@ printdaystat() {
 }
 
 void
+printpayline(const char * label, const float time) {
+	printf("%s %.2f\n", label, time);
+}
+
+void
+printtopay(const float time) {
+	printpayline("--- To pay:", time);
+}
+
+void
 set(const unsigned int time, const int label) {
 	data.day[label] += time;
 	data.week[label] += time;
@@ -368,6 +378,7 @@ main(int argc, char *argv[]) {
 	printmonthstat();
 	printf("\n");
 	printyearstat();
+	printtopay(1.0);
 
 	freedata();
 	free(buf);
