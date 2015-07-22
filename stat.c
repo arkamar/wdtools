@@ -101,7 +101,7 @@ char *argv0;
 
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-bnt] [-chms number]\n", argv0);
+	fprintf(stderr, "usage: %s [-c number]\n", argv0);
 	exit(1);
 }
 
@@ -287,6 +287,9 @@ main(int argc, char *argv[]) {
 	int label;
 
 	ARGBEGIN {
+	case 'c':
+		columns = atoi(EARGF(usage()));
+		break;
 	default:
 		usage();
 	} ARGEND;
