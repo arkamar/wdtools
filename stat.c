@@ -167,14 +167,15 @@ freedata() {
 char *
 istask(const char * line, struct interval * in) {
 	char * ob; /* open bracket */
+	char * hp; /* hyphen */
 	if ((ob = strchr(line, '('))) {
 		if ((in->start = gettime(ob + 1)) >= 0
-				&& ob[6] == '-') {
+				&& (hp = strchr(ob, '-'))) {
 			/* hack to speedup label search */
 			ob[0] = '\0';
-			if ((in->stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
+			if ((in->stop = gettime(hp + 1)) >= 0 && strchr(hp, ')')) {
 				return ob + 1;
-			} else if (ob[7] == ')') {
+			} else if (hp[1] == ')') {
 				in->stop = now();
 				return ob + 1;
 			}
