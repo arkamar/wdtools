@@ -50,7 +50,7 @@ char *argv0;
 
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-dmtw] [-c number]\n", argv0);
+	fprintf(stderr, "usage: %s [-dmtw] [-ceM number]\n", argv0);
 	exit(1);
 }
 
