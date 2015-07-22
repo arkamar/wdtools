@@ -58,7 +58,7 @@ typedef void (*fun)(const int, const int, const int);
 static int getdayid(const char * line);
 static int getlabelid(const char * line);
 static int gettime(const char * digit);
-static int istask(const char * line, struct interval * in);
+static char * istask(const char * line, struct interval * in);
 static void initdata();
 static unsigned int now();
 static unsigned int rounded(const unsigned int x, const unsigned int y);
@@ -126,7 +126,7 @@ initdata() {
 		fprintf(stderr, "Shit, I cannot calloc\n");
 }
 
-int
+char *
 istask(const char * line, struct interval * in) {
 	char * ob; /* open bracket */
 	if ((ob = strchr(line, '('))) {
@@ -135,14 +135,14 @@ istask(const char * line, struct interval * in) {
 			/* hack to speedup label search */
 			ob[0] = '\0';
 			if ((in->stop = gettime(ob + 7)) >= 0 && ob[12] == ')') {
-				return in->stop - in->start;
+				return ob + 1;
 			} else if (ob[7] == ')') {
 				in->stop = now();
-				return in->stop - in->start;
+				return ob + 1;
 			}
 		}
 	}
-	return -1;
+	return NULL;
 }
 
 int
@@ -296,9 +296,9 @@ main(int argc, char *argv[]) {
 	initdata();
 
 	while (getline(&buf, &size, fp) > 0) {
-		int time;
+		char * time;
 		struct interval interval;
-		if ((time = istask(buf, &interval)) >= 0) {
+		if ((time = istask(buf, &interval))) {
 			label = getlabelid(buf);
 			set(day, &interval, label);
 			continue;
