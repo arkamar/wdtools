@@ -51,7 +51,7 @@ struct labels {
 
 static const struct labels convert[] = {
 	{ "all",' ' },
-	{ "!*", ' ' },
+	{ "!*", '-' },
 	{ "wd", 'w' },
 	{ "L",  'L' },
 	{ "k",  'k' },

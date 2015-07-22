@@ -19,7 +19,7 @@ struct interval {
 	int stop;
 };
 
-char * daynames[] = {
+static const char * daynames[] = {
 	"Monday",
 	"Tuesday",
 	"Wednesday",
@@ -34,7 +34,9 @@ struct labels {
 	char mark;
 };
 
-struct labels convert[] = {
+static const struct labels convert[] = {
+	{ "all",' ' },
+	{ "!*", '-' },
 	{ "wd", 'w' },
 	{ "L",  'L' },
 	{ "k",  'k' },
