@@ -24,22 +24,23 @@ struct labels {
 
 static const struct labels convert[] = {
 	{ "all",' ' },
-	{ "!*", '-' },
+	{ "",   '+' },
+	{ "d",  '+' },
+	{ "le", '+' },
 	{ "wd", 'w' },
-	{ "L",  'L' },
 	{ "k",  'k' },
-	{ "p",  'p' },
+	{ "L",  'L' },
 	{ "!t", 't' },
 	{ "!",  '-' },
 	{ "!u", 'u' },
-	{ "",   '+' },
+	{ "!*", '-' },
 	{ "ui", 'G' },
 	{ "sp", 's' },
 	{ "ph", 'P' },
-	{ "le", '+' },
 	{ "a",  'a' },
+	{ "p",  'p' },
 	/* UNKNOWN MUST be the last one */
-	{ "UNKNOWN", '.' },
+	{ "UNKN", '.' },
 };
 
 static const char * monthnames[] = {
