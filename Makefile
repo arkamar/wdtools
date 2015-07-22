@@ -3,7 +3,8 @@
 include config.mk
 
 BIN = \
-	punch
+	punch \
+	stat
 OBJ = ${BIN:=.o}
 SRC = ${BIN:=.c}
 
