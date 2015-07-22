@@ -206,7 +206,7 @@ main(int argc, char *argv[]) {
 	maketablehdr();
 	if (options.flags & (F_PRINT_NUM | F_PRINT_BOTH))
 		maketable(label, numtable);
-	if (!(options.flags & F_PRINT_NUM) || options.flags & F_PRINT_BOTH)
+	if ((options.flags & (F_PRINT_NUM | F_PRINT_BOTH)) ^ F_PRINT_NUM)
 		maketable(label, marktable);
 
 	free(data);
