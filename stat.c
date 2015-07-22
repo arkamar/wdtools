@@ -90,10 +90,12 @@ static void usage();
 
 static int columns = 9;
 
-static unsigned int * day;
-static unsigned int * week;
-static unsigned int * month;
-static unsigned int * year;
+static struct arrays {
+	unsigned int * day;
+	unsigned int * week;
+	unsigned int * month;
+	unsigned int * year;
+} data;
 
 char *argv0;
 
@@ -130,26 +132,26 @@ now() {
 
 void
 initdata() {
-	year = calloc(LENGTH(convert), sizeof(unsigned int));
-	if (!year)
+	data.year = calloc(LENGTH(convert), sizeof(unsigned int));
+	if (!data.year)
 		fprintf(stderr, "Shit, I cannot calloc\n");
-	month = calloc(LENGTH(convert), sizeof(unsigned int));
-	if (!month)
+	data.month = calloc(LENGTH(convert), sizeof(unsigned int));
+	if (!data.month)
 		fprintf(stderr, "Shit, I cannot calloc\n");
-	week = calloc(LENGTH(convert), sizeof(unsigned int));
-	if (!week)
+	data.week = calloc(LENGTH(convert), sizeof(unsigned int));
+	if (!data.week)
 		fprintf(stderr, "Shit, I cannot calloc\n");
-	day = calloc(LENGTH(convert), sizeof(unsigned int));
-	if (!day)
+	data.day = calloc(LENGTH(convert), sizeof(unsigned int));
+	if (!data.day)
 		fprintf(stderr, "Shit, I cannot calloc\n");
 }
 
 void
 freedata() {
-	free(year);
-	free(month);
-	free(week);
-	free(day);
+	free(data.year);
+	free(data.month);
+	free(data.week);
+	free(data.day);
 }
 
 char *
@@ -246,35 +248,35 @@ printpercstatline(const char * label, const unsigned int * array) {
 
 void
 printyearstat() {
-	printstatline("%YS", year, 3600.0);
-	printpercstatline("%YP", year);
+	printstatline("%YS", data.year, 3600.0);
+	printpercstatline("%YP", data.year);
 }
 
 void
 printmonthstat() {
-	printstatline("%MS", month, 3600.0);
-	printpercstatline("%MP", month);
+	printstatline("%MS", data.month, 3600.0);
+	printpercstatline("%MP", data.month);
 }
 
 void
 printweekstat() {
-	printstatline("%WS", week, 3600.0);
-	printpercstatline("%WP", week);
+	printstatline("%WS", data.week, 3600.0);
+	printpercstatline("%WP", data.week);
 }
 
 void
 printdaystat() {
 	printlabels();
-	printstatline("%DS", day, 3600.0);
-	printpercstatline("%DP", day);
+	printstatline("%DS", data.day, 3600.0);
+	printpercstatline("%DP", data.day);
 }
 
 void
 set(const unsigned int time, const int label) {
-	day[label] += time;
-	week[label] += time;
-	month[label] += time;
-	year[label] += time;
+	data.day[label] += time;
+	data.week[label] += time;
+	data.month[label] += time;
+	data.year[label] += time;
 }
 
 int
@@ -313,17 +315,17 @@ main(int argc, char *argv[]) {
 		if ((rd = getdayid(buf)) >= 0) {
 			printdaystat();
 			printf("%s", buf);
-			memset(day, 0, LENGTH(convert) * sizeof(unsigned int));
+			memset(data.day, 0, LENGTH(convert) * sizeof(unsigned int));
 			continue;
 		}
 		if (strstr(buf, "WEEK")) {
 			printweekstat();
-			memset(week, 0, LENGTH(convert) * sizeof(unsigned int));
+			memset(data.week, 0, LENGTH(convert) * sizeof(unsigned int));
 			continue;
 		}
 		if (isnewmonth(buf)) {
 			printmonthstat();
-			memset(month, 0, LENGTH(convert) * sizeof(unsigned int));
+			memset(data.month, 0, LENGTH(convert) * sizeof(unsigned int));
 			continue;
 		}
 	}
