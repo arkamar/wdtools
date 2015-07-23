@@ -112,8 +112,8 @@ printstatline(const char * label, const int * array, const float divisor) {
 	int i;
 	printf("%s ", label);
 	for (i = 1; i < columns; i++)
-		printf("%6.2f ", array[i] / divisor);
-	printf("%6.2f ", array[0] / divisor);
+		printf("%6.*f ", (array[i] / divisor < 1000) ? 2 : 1, array[i] / divisor);
+	printf("%6.*f ", (array[0] / divisor < 1000) ? 2 : 1, array[0] / divisor);
 	printf("\n");
 }
 
