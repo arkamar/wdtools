@@ -51,7 +51,7 @@ char *argv0;
 
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-dmtw] [-ceM number]\n", argv0);
+	fprintf(stderr, "usage: %s [-dmtw] [-ceM number] [-W label]\n", argv0);
 	exit(1);
 }
 
@@ -180,6 +180,7 @@ main(int argc, char *argv[]) {
 	int label, workingtime = 0;
 	const unsigned int procrastination = getlabelid("!*");
 	const unsigned int work = getlabelid("+");
+	unsigned int payed = getlabelid("");
 
 	ARGBEGIN {
 	case 'c':
@@ -204,6 +205,9 @@ main(int argc, char *argv[]) {
 		break;
 	case 'w':
 		options.flags |= F_WEEK_STAT;
+		break;
+	case 'W':
+		payed = getlabelid(EARGF(usage()));
 		break;
 	default:
 		usage();
@@ -231,7 +235,7 @@ main(int argc, char *argv[]) {
 				set(timeint, procrastination);
 			if (convert[label].mark == '+')
 				set(timeint, work);
-			if (buf[0] == '\0')
+			if (label == payed)
 				workingtime += timeint;
 			continue;
 		}
