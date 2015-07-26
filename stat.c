@@ -59,16 +59,16 @@ void
 initdata() {
 	data.year = calloc(LENGTH(convert), sizeof(int));
 	if (!data.year)
-		fprintf(stderr, "Shit, I cannot calloc\n");
+		fprintf(stderr, "Error, cannot allocate memory\n");
 	data.month = calloc(LENGTH(convert), sizeof(int));
 	if (!data.month)
-		fprintf(stderr, "Shit, I cannot calloc\n");
+		fprintf(stderr, "Error, cannot allocate memory\n");
 	data.week = calloc(LENGTH(convert), sizeof(int));
 	if (!data.week)
-		fprintf(stderr, "Shit, I cannot calloc\n");
+		fprintf(stderr, "Error, cannot allocate memory\n");
 	data.day = calloc(LENGTH(convert), sizeof(int));
 	if (!data.day)
-		fprintf(stderr, "Shit, I cannot calloc\n");
+		fprintf(stderr, "Error, cannot allocate memory\n");
 }
 
 void
