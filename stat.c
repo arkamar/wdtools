@@ -10,6 +10,7 @@
 
 #include "arg.h"
 #include "config.h"
+#include "utils.h"
 
 #define LENGTH(X) (sizeof(X) / sizeof(X[0]))
 

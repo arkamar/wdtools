@@ -5,13 +5,14 @@ include config.mk
 BIN = \
 	punch \
 	stat
-OBJ = ${BIN:=.o}
+OBJ = ${BIN:=.o} utils.o
 SRC = ${BIN:=.c}
 
 all: options ${BIN}
 
 ${BIN}: ${@:=.o}
-${OBJ}: config.mk config.h
+${BIN}: utils.o
+${OBJ}: config.mk config.h utils.h
 
 options:
 	@echo ${NAME} build options:

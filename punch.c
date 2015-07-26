@@ -10,6 +10,7 @@
 
 #include "arg.h"
 #include "config.h"
+#include "utils.h"
 
 #define IDX(day, bin, label)	((day) * arrsize * LENGTH(convert) \
 		+ (bin) * LENGTH(convert) + (label))
