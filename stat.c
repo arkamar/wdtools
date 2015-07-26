@@ -215,6 +215,7 @@ main(int argc, char *argv[]) {
 		char * time;
 		struct interval interval;
 		if ((time = istask(buf, &interval))) {
+			const int timeint = interval.stop - interval.start;
 			label = getlabelid(buf);
 			char * tmp = strchr(time, ')');
 			tmp[0] = '\0';
@@ -222,16 +223,16 @@ main(int argc, char *argv[]) {
 				printf("%-2s(%s", buf, time);
 				if (tmp[-1] == '-')
 					printf("%s", sec2str(interval.stop));
-				printf(") %.2f:%s", (interval.stop - interval.start) / 3600.0, tmp + 1);
+				printf(") %.2f:%s", (timeint) / 3600.0, tmp + 1);
 			}
-			set(interval.stop - interval.start, label);
-			set(interval.stop - interval.start, 0);
+			set(timeint, label);
+			set(timeint, 0);
 			if (strchr(buf, '!'))
-				set(interval.stop - interval.start, procrastination);
+				set(timeint, procrastination);
 			if (convert[label].mark == '+')
-				set(interval.stop - interval.start, work);
+				set(timeint, work);
 			if (buf[0] == '\0')
-				workingtime += interval.stop - interval.start;
+				workingtime += timeint;
 			continue;
 		}
 		int rd;
