@@ -4,7 +4,8 @@ include config.mk
 
 BIN = \
 	punch \
-	stat
+	stat \
+	wrkhr
 OBJ = ${BIN:=.o} utils.o
 SRC = ${BIN:=.c}
 
