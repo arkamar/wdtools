@@ -73,12 +73,18 @@ main(int argc, char *argv[]) {
 			if (label != payed)
 				continue;
 			char * tmp = strchr(time, ')');
+			char * hyphen = strchr(tmp + 1, '-');
 			tmp[0] = '\0';
 			if (options.flags & F_PRINT_TASK) {
 				printf("%-2s(%s", buf, time);
 				if (tmp[-1] == '-')
 					printf("%s", sec2str(interval.stop));
-				printf(") %.2f:%s", (timeint) / 3600.0, tmp + 1);
+				if (hyphen) {
+					hyphen[-1] = '\0';
+					printf(") %.2f [%s] %s", (timeint) / 3600.0, tmp + 2, hyphen + 1);
+				} else {
+					printf(") %.2f:%s", (timeint) / 3600.0, tmp + 1);
+				}
 			}
 			continue;
 		}
