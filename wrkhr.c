@@ -130,10 +130,13 @@ printvalues(float value) {
 
 static void
 printline(const char * label, long time) {
-	printf("%-20s:", label);
-	printvalues(time / 3600.0 * 100.0 / options.efc);
-	printvalues(time / 3600.0);
-	printvalues(time / 3600.0 * (100.0 / options.efc - 1));
+	printf("%-10s", label);
+	if (options.flags & F_PRINT_OPT)
+		printvalues(time / 3600.0 * 100.0 / options.efc);
+	if (options.flags & F_PRINT_REAL)
+		printvalues(time / 3600.0);
+	if (options.flags & F_PRINT_DIFF)
+		printvalues(time / 3600.0 * (100.0 / options.efc - 1));
 	printf("\n");
 }
 
