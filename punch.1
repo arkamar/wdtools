@@ -1,43 +1,35 @@
-.de FN
-\fI\|\\$1\|\fP\\$2
-..
-.TH punch 23 "July 2015"
-.SH NAME
-punch \- work-diary punch card
-
-.SH SYNOPSIS
-.B punch
-.RB [ \-bnt ]
-.RB [ \- chms
-.RB NUMBER ]
-
-.SH DESCRIPTION
-.B punch
+.Dd August 7, 2015
+.Dt PUNCH 1
+.Os wd
+.Sh NAME
+.Nm punch
+.Nd work-diary punch card
+.Sh SYNOPSIS
+.Nm
+.Op Fl bnt
+.Op Fl chms Ar NUMBER
+.Sh DESCRIPTION
+.Nm
 reads work diary from standard input and prints punch card to the standard output.
 It uses convert table to transfer each label to one letter mark that will be print out (see config.h).
-
-.SH OPTIONS
-.TP
-.BI \-b
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl b
 Print both, hours and symbols.
-.TP
-.BI \-n
+.It Fl n
 Print number part.
-.TP
-.BI \-t
+.It Fl t
 Print times. It makes sense only in conjunction with -n or -b.
-.TP
-.BI \-c " COLUMNS"
+.It Fl c Ar COLUMNS
 Number of COLUMNS to print.
-.TP
-.BI \-h " HOUR"
+.It Fl h Ar HOURS
 Bin size in hours.
-.TP
-.BI \-m " MIN"
+.It Fl m Ar MIN
 Bin size in minutes.
-.TP
-.BI \-s " SEC"
+.It Fl s Ar SEC
 Bin size in seconds.
-
-.SH AUTHORS
+.El
+.Sh AUTHORS
 Copyright \(co 2015 by Petr Vaněk <arkamar@atlas.cz>
+.Sh BUGS
+Pleas report them.
