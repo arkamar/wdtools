@@ -140,8 +140,33 @@ printline(const char * label, long time) {
 }
 
 static void
+printcolname(const char * name) {
+	const int pt = (options.flags & F_PRINT_TIME) ? 1 : 0;
+	const int pm = (options.mph) ? 1 : 0;
+	const int space = 6 * pt + 8 * pm + (pm + pt - 1);
+	int sb = (space + strlen(name)) / 2;
+	sb += ((space + strlen(name)) % 2) ? 1 : 0;
+	const int sa = (space - strlen(name)) / 2;
+	printf(" %*s%*s", sb, name, sa, "");
+}
+
+static void
+printhead() {
+	printf("%-10s", "label");
+	if (options.efc)
+		printcolname("optim");
+	if (options.flags & F_PRINT_REAL)
+		printcolname("real");
+	if (options.flags & F_PRINT_DIFF && options.efc)
+		printcolname("diff");
+	printf("\n");
+}
+
+static void
 print(long other) {
 	size_t i, sum = 0;
+	if (options.flags & F_PRINT_HEAD)
+		printhead();
 	for (i = 0; i < workinglabels.size; i++) {
 		if (workinglabels.data[i].counter)
 			printline(workinglabels.data[i].str, workinglabels.data[i].counter);
