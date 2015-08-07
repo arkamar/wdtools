@@ -22,12 +22,93 @@ static struct options {
 	unsigned char flags;
 } options;
 
+struct string {
+	size_t len;
+	char * str;
+};
+
+struct vector {
+	size_t capacity;
+	size_t size;
+	struct string * data;
+};
+
 char *argv0;
+struct vector workinglabels;
 
 void
 usage(void) {
 	fprintf(stderr, "usage: %s [-p] [-w LABEL] [-eM NUMBER]\n", argv0);
 	exit(1);
+}
+
+void
+init() {
+	if (!(workinglabels.data = calloc(sizeof(struct string), 20))) {
+		fprintf(stderr, "Cannot alloc enough memory\n");
+		return;
+	}
+	workinglabels.capacity = 20;
+}
+
+int
+resize() {
+	if (workinglabels.size == workinglabels.capacity) {
+		const size_t newcap = workinglabels.capacity * 3 / 2;
+		void * newdata = realloc(workinglabels.data, newcap * sizeof(struct string));
+		if (newdata) {
+			workinglabels.data = newdata;
+			workinglabels.capacity = newcap;
+		} else {
+			fprintf(stderr, "Cannot realloc memory\n");
+			return -1;
+		}
+	}
+	return 0;
+}
+
+static void
+freedata() {
+	size_t i;
+	for (i = 0; i < workinglabels.size; i++) {
+		free(workinglabels.data[i].str);
+	}
+	free(workinglabels.data);
+}
+
+static int
+compare(const char * str, size_t * ret) {
+	size_t i;
+	const size_t len = strlen(str);
+	for (i = 0; i < workinglabels.size; i++) {
+		struct string * item = &workinglabels.data[i];
+		if (len != item->len)
+			continue;
+		if (!memcmp(item->str, str, len)) {
+			*ret = i;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+static void
+add(const char * str, size_t * ret) {
+	if (resize())
+		return;
+	struct string * item = &workinglabels.data[workinglabels.size];
+	item->len = strlen(str);
+	item->str = strndup(str, item->len);
+	*ret = workinglabels.size;
+	workinglabels.size++;
+}
+
+static size_t
+store(const char * str) {
+	size_t ret;
+	if (compare(str, &ret))
+		add(str, &ret);
+	return ret;
 }
 
 char *
@@ -64,6 +145,8 @@ main(int argc, char *argv[]) {
 		usage();
 	} ARGEND;
 
+	init();
+
 	while (getline(&buf, &size, fp) > 0) {
 		char * time;
 		struct interval interval;
@@ -78,6 +161,7 @@ main(int argc, char *argv[]) {
 			if (hyphen) {
 				hyphen[-1] = '\0';
 				wl = tmp + 2;
+				store(wl);
 			} else {
 				workingtime += timeint;
 			}
@@ -100,9 +184,14 @@ main(int argc, char *argv[]) {
 		}
 	}
 
+	size_t i;
+	for (i = 0; i < workinglabels.size; i++) {
+		printf("%s\n", workinglabels.data[i].str);
+	}
 	printf("other: %d\n", workingtime);
 
 	free(buf);
+	freedata();
 
 	return EXIT_SUCCESS;
 }
