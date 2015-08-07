@@ -120,55 +120,64 @@ reset() {
 }
 
 static void
-printvalues(float value) {
+printvalues(float value, int * iteration) {
+	if (*iteration)
+		printf(" |");
 	if (options.flags & F_PRINT_TIME)
 		printf(" %6.2f", value);
 	if (options.mph)
 		printf(" %8.1f", value * options.mph);
+	++*iteration;
 }
 
 static void
 printline(const char * label, long time) {
 	printf("%-10s", label);
+	int iteration = 0;
 	if (options.efc)
-		printvalues(time / 3600.0 * 100.0 / options.efc);
+		printvalues(time / 3600.0 * 100.0 / options.efc, &iteration);
 	if (options.flags & F_PRINT_REAL)
-		printvalues(time / 3600.0);
+		printvalues(time / 3600.0, &iteration);
 	if (options.flags & F_PRINT_DIFF && options.efc)
-		printvalues(time / 3600.0 * (100.0 / options.efc - 1));
+		printvalues(time / 3600.0 * (100.0 / options.efc - 1), &iteration);
 	printf("\n");
 }
 
 static void
-printcolname(const char * name) {
+printcolname(const char * name, int * i) {
 	const int pt = (options.flags & F_PRINT_TIME) ? 1 : 0;
 	const int pm = (options.mph) ? 1 : 0;
 	const int space = 6 * pt + 8 * pm + (pm + pt - 1);
 	int sb = (space + strlen(name)) / 2;
 	sb += ((space + strlen(name)) % 2) ? 1 : 0;
+	if (*i)
+		printf(" |");
 	const int sa = (space - strlen(name)) / 2;
 	printf(" %*s%*s", sb, name, sa, "");
+	++*i;
 }
 
 static void
 printhead() {
-	int i, cols = 0;
+	int i = 0, cols = 0;
 	printf("%-10s", "label");
 	if (options.efc) {
-		printcolname("optim");
+		printcolname("optim", &i);
 		cols++;
 	}
 	if (options.flags & F_PRINT_REAL) {
-		printcolname("real");
+		printcolname("real", &i);
 		cols++;
 	}
 	if (options.flags & F_PRINT_DIFF && options.efc) {
-		printcolname("diff");
+		printcolname("diff", &i);
 		cols++;
 	}
 	printf("\n");
 	printf("%-10s", "");
 	for (i = 0; i < cols; i++) {
+		if (i)
+			printf(" |");
 		if (options.flags & F_PRINT_TIME)
 			printf(" %6s", "[h]");
 		if (options.mph)
@@ -277,14 +286,13 @@ main(int argc, char *argv[]) {
 			continue;
 		}
 		if (!strncmp(buf, "+++", 3)) {
-			print(workingtime);
+			if (!(options.flags & F_PRINT_LAST))
+				print(workingtime);
 			reset();
 			workingtime = 0;
-			printf("%s", buf);
 		}
 	}
 
-	printf("END\n");
 	print(workingtime);
 
 	free(buf);
