@@ -18,7 +18,6 @@ static struct options {
 #define F_PRINT_TASK  0x01
 #define F_PRINT_DIFF  0x02
 #define F_PRINT_REAL  0x04
-#define F_PRINT_OPT   0x08
 #define F_PRINT_TIME  0x10
 #define F_PRINT_HEAD  0x20
 #define F_PRINT_LAST  0x40
@@ -131,11 +130,11 @@ printvalues(float value) {
 static void
 printline(const char * label, long time) {
 	printf("%-10s", label);
-	if (options.flags & F_PRINT_OPT)
+	if (options.efc)
 		printvalues(time / 3600.0 * 100.0 / options.efc);
 	if (options.flags & F_PRINT_REAL)
 		printvalues(time / 3600.0);
-	if (options.flags & F_PRINT_DIFF)
+	if (options.flags & F_PRINT_DIFF && options.efc)
 		printvalues(time / 3600.0 * (100.0 / options.efc - 1));
 	printf("\n");
 }
@@ -190,9 +189,6 @@ main(int argc, char *argv[]) {
 		break;
 	case 'r':
 		options.flags |= F_PRINT_REAL;
-		break;
-	case 'o':
-		options.flags |= F_PRINT_OPT;
 		break;
 	case 't':
 		options.flags |= F_PRINT_TIME;
