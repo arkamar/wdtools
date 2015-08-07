@@ -131,21 +131,24 @@ printvalues(float value) {
 static void
 printline(const char * label, long time) {
 	printf("%-20s:", label);
-	printvalues(time / 3600.0);
 	printvalues(time / 3600.0 * 100.0 / options.efc);
+	printvalues(time / 3600.0);
 	printvalues(time / 3600.0 * (100.0 / options.efc - 1));
 	printf("\n");
 }
 
 static void
 print(long other) {
-	size_t i;
+	size_t i, sum = 0;
 	for (i = 0; i < workinglabels.size; i++) {
 		if (workinglabels.data[i].counter)
 			printline(workinglabels.data[i].str, workinglabels.data[i].counter);
+		sum += workinglabels.data[i].counter;
 	}
 	if (other)
 		printline("other", other);
+	if (sum + other)
+		printline("all", sum + other);
 }
 
 char *
