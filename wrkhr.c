@@ -23,6 +23,7 @@ static struct options {
 } options;
 
 struct string {
+	long counter;
 	size_t len;
 	char * str;
 };
@@ -77,7 +78,7 @@ freedata() {
 }
 
 static int
-compare(const char * str, size_t * ret) {
+compare(const char * str, const long time) {
 	size_t i;
 	const size_t len = strlen(str);
 	for (i = 0; i < workinglabels.size; i++) {
@@ -85,7 +86,7 @@ compare(const char * str, size_t * ret) {
 		if (len != item->len)
 			continue;
 		if (!memcmp(item->str, str, len)) {
-			*ret = i;
+			item->counter += time;
 			return 0;
 		}
 	}
@@ -93,22 +94,20 @@ compare(const char * str, size_t * ret) {
 }
 
 static void
-add(const char * str, size_t * ret) {
+add(const char * str, const long time) {
 	if (resize())
 		return;
 	struct string * item = &workinglabels.data[workinglabels.size];
 	item->len = strlen(str);
 	item->str = strndup(str, item->len);
-	*ret = workinglabels.size;
+	item->counter = time;
 	workinglabels.size++;
 }
 
-static size_t
-store(const char * str) {
-	size_t ret;
-	if (compare(str, &ret))
-		add(str, &ret);
-	return ret;
+static void
+store(const char * str, const long time) {
+	if (compare(str, time))
+		add(str, time);
 }
 
 char *
@@ -125,7 +124,8 @@ main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
 	static size_t size = 0;
-	int label, workingtime = 0;
+	int label;
+	long workingtime = 0;
 	unsigned int payed = getlabelid("");
 
 	ARGBEGIN {
@@ -161,7 +161,7 @@ main(int argc, char *argv[]) {
 			if (hyphen) {
 				hyphen[-1] = '\0';
 				wl = tmp + 2;
-				store(wl);
+				store(wl, timeint);
 			} else {
 				workingtime += timeint;
 			}
@@ -186,9 +186,9 @@ main(int argc, char *argv[]) {
 
 	size_t i;
 	for (i = 0; i < workinglabels.size; i++) {
-		printf("%s\n", workinglabels.data[i].str);
+		printf("%s: %ld\n", workinglabels.data[i].str, workinglabels.data[i].counter);
 	}
-	printf("other: %d\n", workingtime);
+	printf("other: %ld\n", workingtime);
 
 	free(buf);
 	freedata();
