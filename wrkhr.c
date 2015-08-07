@@ -22,8 +22,6 @@ static struct options {
 	unsigned char flags;
 } options;
 
-static long other;
-
 char *argv0;
 
 void
@@ -81,7 +79,7 @@ main(int argc, char *argv[]) {
 				hyphen[-1] = '\0';
 				wl = tmp + 2;
 			} else {
-				other += timeint;
+				workingtime += timeint;
 			}
 			tmp[0] = '\0';
 			if (options.flags & F_PRINT_TASK) {
@@ -102,7 +100,7 @@ main(int argc, char *argv[]) {
 		}
 	}
 
-	printf("other: %ld\n", other);
+	printf("other: %d\n", workingtime);
 
 	free(buf);
 
