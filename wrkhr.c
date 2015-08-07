@@ -16,9 +16,12 @@ static struct options {
 	unsigned int mph; /* money per hour */
 	unsigned int efc; /* working efficiency */
 #define F_PRINT_TASK  0x01
-#define F_DAY_STAT    0x02
-#define F_WEEK_STAT   0x04
-#define F_MONTH_STAT  0x08
+#define F_PRINT_DIFF  0x02
+#define F_PRINT_REAL  0x04
+#define F_PRINT_OPT   0x08
+#define F_PRINT_TIME  0x10
+#define F_PRINT_HEAD  0x20
+#define F_PRINT_LAST  0x40
 	unsigned char flags;
 } options;
 
@@ -158,6 +161,24 @@ main(int argc, char *argv[]) {
 		break;
 	case 'W':
 		payed = getlabelid(EARGF(usage()));
+		break;
+	case 'd':
+		options.flags |= F_PRINT_DIFF;
+		break;
+	case 'r':
+		options.flags |= F_PRINT_REAL;
+		break;
+	case 'o':
+		options.flags |= F_PRINT_OPT;
+		break;
+	case 't':
+		options.flags |= F_PRINT_TIME;
+		break;
+	case 'h':
+		options.flags |= F_PRINT_HEAD;
+		break;
+	case 'l':
+		options.flags |= F_PRINT_LAST;
 		break;
 	default:
 		usage();
