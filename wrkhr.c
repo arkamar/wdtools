@@ -110,6 +110,24 @@ store(const char * str, const long time) {
 		add(str, time);
 }
 
+static void
+reset() {
+	size_t i;
+	for (i = 0; i < workinglabels.size; i++)
+		workinglabels.data[i].counter = 0;
+}
+
+static void
+print(long other) {
+	size_t i;
+	for (i = 0; i < workinglabels.size; i++) {
+		if (workinglabels.data[i].counter)
+			printf("%s: %ld\n", workinglabels.data[i].str, workinglabels.data[i].counter);
+	}
+	if (other)
+		printf("other: %ld\n", other);
+}
+
 char *
 sec2str(unsigned int sec) {
 	static char buf[16];
@@ -179,16 +197,15 @@ main(int argc, char *argv[]) {
 			continue;
 		}
 		if (!strncmp(buf, "+++", 3)) {
-			printf("%s", buf);
+			print(workingtime);
+			reset();
 			workingtime = 0;
+			printf("%s", buf);
 		}
 	}
 
-	size_t i;
-	for (i = 0; i < workinglabels.size; i++) {
-		printf("%s: %ld\n", workinglabels.data[i].str, workinglabels.data[i].counter);
-	}
-	printf("other: %ld\n", workingtime);
+	printf("END\n");
+	print(workingtime);
 
 	free(buf);
 	freedata();
