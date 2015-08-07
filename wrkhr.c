@@ -41,7 +41,7 @@ struct vector workinglabels;
 
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-dhloprt] [-w LABEL] [-eM NUMBER]\n", argv0);
+	fprintf(stderr, "usage: %s [-dhlprt] [-W LABEL] [-eM NUMBER]\n", argv0);
 	exit(1);
 }
 
