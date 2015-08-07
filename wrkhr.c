@@ -152,13 +152,28 @@ printcolname(const char * name) {
 
 static void
 printhead() {
+	int i, cols = 0;
 	printf("%-10s", "label");
-	if (options.efc)
+	if (options.efc) {
 		printcolname("optim");
-	if (options.flags & F_PRINT_REAL)
+		cols++;
+	}
+	if (options.flags & F_PRINT_REAL) {
 		printcolname("real");
-	if (options.flags & F_PRINT_DIFF && options.efc)
+		cols++;
+	}
+	if (options.flags & F_PRINT_DIFF && options.efc) {
 		printcolname("diff");
+		cols++;
+	}
+	printf("\n");
+	printf("%-10s", "");
+	for (i = 0; i < cols; i++) {
+		if (options.flags & F_PRINT_TIME)
+			printf(" %6s", "[h]");
+		if (options.mph)
+			printf(" %8s", "[ ]");
+	}
 	printf("\n");
 }
 
