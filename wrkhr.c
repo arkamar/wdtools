@@ -22,6 +22,8 @@ static struct options {
 	unsigned char flags;
 } options;
 
+static long other;
+
 char *argv0;
 
 void
@@ -74,14 +76,20 @@ main(int argc, char *argv[]) {
 				continue;
 			char * tmp = strchr(time, ')');
 			char * hyphen = strchr(tmp + 1, '-');
+			char * wl;
+			if (hyphen) {
+				hyphen[-1] = '\0';
+				wl = tmp + 2;
+			} else {
+				other += timeint;
+			}
 			tmp[0] = '\0';
 			if (options.flags & F_PRINT_TASK) {
 				printf("%-2s(%s", buf, time);
 				if (tmp[-1] == '-')
 					printf("%s", sec2str(interval.stop));
 				if (hyphen) {
-					hyphen[-1] = '\0';
-					printf(") %.2f [%s] %s", (timeint) / 3600.0, tmp + 2, hyphen + 1);
+					printf(") %.2f:[%s]%s", (timeint) / 3600.0, tmp + 2, hyphen + 1);
 				} else {
 					printf(") %.2f:%s", (timeint) / 3600.0, tmp + 1);
 				}
@@ -93,6 +101,8 @@ main(int argc, char *argv[]) {
 			workingtime = 0;
 		}
 	}
+
+	printf("other: %ld\n", other);
 
 	free(buf);
 
