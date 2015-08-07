@@ -121,14 +121,20 @@ reset() {
 }
 
 static void
+printline(const char * label, long time) {
+	printf("%-10s:", label);
+	printf("\n");
+}
+
+static void
 print(long other) {
 	size_t i;
 	for (i = 0; i < workinglabels.size; i++) {
 		if (workinglabels.data[i].counter)
-			printf("%s: %ld\n", workinglabels.data[i].str, workinglabels.data[i].counter);
+			printline(workinglabels.data[i].str, workinglabels.data[i].counter);
 	}
 	if (other)
-		printf("other: %ld\n", other);
+		printline("other", other);
 }
 
 char *
