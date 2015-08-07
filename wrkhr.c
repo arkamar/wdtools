@@ -120,6 +120,48 @@ reset() {
 }
 
 static void
+printbb() {
+	int i, col = 0;
+	if (options.flags & F_PRINT_DIFF && options.efc)
+		col++;
+	if (options.efc)
+		col++;
+	if (options.flags & F_PRINT_REAL)
+		col++;
+	printf("==========");
+	for (i = 0; i < col; i++) {
+		if (i)
+			printf("==");
+		if (options.flags & F_PRINT_TIME)
+			printf("=======");
+		if (options.mph)
+			printf("=========");
+	}
+	printf("\n");
+}
+
+static void
+printsplitter() {
+	int i, col = 0;
+	if (options.flags & F_PRINT_DIFF && options.efc)
+		col++;
+	if (options.efc)
+		col++;
+	if (options.flags & F_PRINT_REAL)
+		col++;
+	printf("----------");
+	for (i = 0; i < col; i++) {
+		if (i)
+			printf("-+");
+		if (options.flags & F_PRINT_TIME)
+			printf("-------");
+		if (options.mph)
+			printf("---------");
+	}
+	printf("\n");
+}
+
+static void
 printvalues(float value, int * iteration) {
 	if (*iteration)
 		printf(" |");
@@ -189,8 +231,11 @@ printhead() {
 static void
 print(long other) {
 	size_t i, sum = 0;
-	if (options.flags & F_PRINT_HEAD)
+	printbb();
+	if (options.flags & F_PRINT_HEAD) {
 		printhead();
+		printsplitter();
+	}
 	for (i = 0; i < workinglabels.size; i++) {
 		if (workinglabels.data[i].counter)
 			printline(workinglabels.data[i].str, workinglabels.data[i].counter);
@@ -198,8 +243,11 @@ print(long other) {
 	}
 	if (other)
 		printline("other", other);
-	if (sum + other)
+	if (sum + other) {
+		printsplitter();
 		printline("all", sum + other);
+	}
+	printbb();
 }
 
 char *
