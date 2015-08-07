@@ -1,51 +1,38 @@
-.de FN
-\fI\|\\$1\|\fP\\$2
-..
-.TH stat 23 "July 2015"
-.SH NAME
-stat \- work-diary statistics
-
-.SH SYNOPSIS
-.B stat
-.RB [ \-dmtw ]
-.RB [ \- ceM
-.RB NUMBER ]
-
-.SH DESCRIPTION
-.B stat
+.Dd August 7, 2015
+.Dt STAT 1
+.Os wd
+.Sh NAME
+.Nm stat
+.Nd work-diary statistics
+.Sh SYNOPSIS
+.Nm
+.Op Fl dmtw
+.Op Fl ceM Ar NUMBER
+.Sh DESCRIPTION
+.Nm
 reads work diary from standard input and prints statistics to the standard output.
-
-.SH OPTIONS
-.TP
-.BI \-c " COLS"
-Number of columns
-.B COLS
-to print.
-.TP
-.BI \-d
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl c Ar COLUMNS
+Number of columns to print.
+.It Fl d
 Print day status for previous day when new day starts.
-.TP
-.BI \-e " EFFICIENCY"
-Working
-.B efficiency
-in percent.
-.TP
-.BI \-M " MONEY"
+.It Fl e Ar EFFICIENCY
+Working efficiency in percent.
+.It Fl M Ar MONEY
 Money per hour.
-.TP
-.BI \-m
+.It Fl m
 Print month status for previous month when new month starts.
-.TP
-.BI \-t
+.It Fl t
 Print tasks.
-.TP
-.BI \-w
+.It Fl w
 Print week status for previous week when new week starts.
-.TP
-.BI \-W " LABEL"
-It sets working
-.B label
-used to compute salary and working hours.
-
-.SH AUTHORS
+.It Fl W Ar LABEL
+It sets working label used to compute salary and working hours.
+.El
+.Sh AUTHORS
 Copyright \(co 2015 by Petr Vaněk <arkamar@atlas.cz>
+.Sh BUGS
+Pleas report them.
+.Sh SEE ALSO
+.Xr punch 1
