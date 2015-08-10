@@ -93,7 +93,7 @@ int
 isnewmonth(const char * line) {
 	int i;
 	for (i = 0; i < LENGTH(monthnames); i++)
-		if (strstr(line, monthnames[i]))
+		if (!strncasecmp(line, monthnames[i], strlen(monthnames[i])))
 			return 1;
 
 	return 0;
