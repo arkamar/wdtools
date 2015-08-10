@@ -11,10 +11,10 @@ gettime(const char * digit) {
 	hour = min = sec = 0;
 	switch (sscanf(digit, "%2d:%2d:%2d", &hour, &min, &sec)) {
 	case 1:
-		return hour * 3600;
 	case 2:
-		return hour * 3600 + min * 60;
 	case 3:
+		if (hour < 0 || hour > 24 || min < 0 || min > 60 || sec < 0 || sec > 60)
+			return -1;
 		return hour * 3600 + min * 60 + sec;
 	default:
 		break;
