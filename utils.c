@@ -35,11 +35,12 @@ istask(const char * line, struct interval * in) {
 	char * ob; /* open bracket */
 	char * hp; /* hyphen */
 	if ((ob = strchr(line, '('))) {
-		if ((in->start = gettime(ob + 1)) >= 0
-				&& (hp = strchr(ob, '-'))) {
+		if ((hp = strchr(ob, '-'))
+			&& hp - ob < 9
+			&& (in->start = gettime(ob + 1)) >= 0) {
 			/* hack to speedup label search */
 			ob[0] = '\0';
-			if ((in->stop = gettime(hp + 1)) >= 0 && strchr(hp, ')')) {
+			if (strchr(hp, ')') - hp < 9 && (in->stop = gettime(hp + 1)) >= 0) {
 				return ob + 1;
 			} else if (hp[1] == ')') {
 				in->stop = now();
