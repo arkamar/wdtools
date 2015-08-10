@@ -222,6 +222,8 @@ main(int argc, char *argv[]) {
 			const int timeint = interval.stop - interval.start;
 			label = getlabelid(buf);
 			char * tmp = strchr(time, ')');
+			if (!tmp)
+				continue;
 			tmp[0] = '\0';
 			if (options.flags & F_PRINT_TASK) {
 				printf("%-2s(%s", buf, time);
