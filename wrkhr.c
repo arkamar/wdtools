@@ -311,6 +311,8 @@ main(int argc, char *argv[]) {
 			if (label != payed)
 				continue;
 			char * tmp = strchr(time, ')');
+			if (!tmp)
+				continue;
 			char * hyphen = strchr(tmp + 1, '-');
 			char * wl;
 			if (hyphen) {
