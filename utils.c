@@ -1,8 +1,9 @@
-#include "config.h"
-#include "utils.h"
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
+
+#include "config.h"
+#include "utils.h"
 
 int
 gettime(const char * digit) {
