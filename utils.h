@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #pragma once
 
 char * istask(const char * line, struct interval * in);

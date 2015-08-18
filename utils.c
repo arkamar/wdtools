@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #include <time.h>
 #include <string.h>
 #include <stdio.h>

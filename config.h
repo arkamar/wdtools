@@ -1,3 +1,5 @@
+/* See LICENSE file for copyright and license details. */
+
 #pragma once
 
 #define LENGTH(X) (sizeof(X) / sizeof(X[0]))
