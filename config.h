@@ -45,6 +45,8 @@ static const struct labels convert[] = {
 	{ "UNKN", '.' },
 };
 
+#define WEEK "WEEK"
+
 static const char * monthnames[] = {
 	"Jan",
 	"Feb",

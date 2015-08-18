@@ -250,7 +250,7 @@ main(int argc, char *argv[]) {
 			memset(data.day, 0, LENGTH(convert) * sizeof(int));
 			continue;
 		}
-		if (strstr(buf, "WEEK")) {
+		if (strstr(buf, WEEK)) {
 			if (options.flags & F_WEEK_STAT)
 				printweekstat();
 			memset(data.week, 0, LENGTH(convert) * sizeof(int));
