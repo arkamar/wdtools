@@ -5,10 +5,33 @@
 .Nm wd-syntax
 .Nd work diary format
 .Sh DESCRIPTION
-LABEL(TIME-TIME) NOTE
-.Pp
-TIME  := HH:MM:SS | HH:MM | HH
-.Pp
-LABEL := ASCII
-.Pp
-NOTE  := WORKING_LABEL - ADDITIONAL_NOTE | ASCII
+.Ss Task
+It is used by punch, stat and wrkhr tools.
+.Bl -tag
+.It LABEL(TIME-TIME) NOTE
+.It TIME  := HH:MM:SS | HH:MM | HH
+.It LABEL := ASCII
+.It NOTE  := WORKING_LABEL - ADDITIONAL_NOTE | ASCII
+.El
+.Ss Day
+It is used by punch and stat
+.Bl -tag
+.It DATE - NAME
+.It DATE := DD.MM.YYYY
+.It NAME is one of the values specified in array 'daynames' defined in config.h.
+.El
+.Ss Week
+Stat searches for value defined under the 'WEEK' in config.h.
+.Ss Month
+Stat searches for values specified in the array 'monthnames' defined in config.h.
+.Ss Payed
+Stat and wrkhr search for string defined under the 'PAY_MARK' in config.h.
+.Sh EXAMPLE
+.Bl -diag
+.It Januar
+.It === WEEK 1. ===
+.It 05.01.2015 - Friday
+.It w(08:00-12:00) work
+.It l(12:00-13:00) lunch
+.It w(13:00-16:00) work
+.El
