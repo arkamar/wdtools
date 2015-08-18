@@ -1,5 +1,5 @@
-NAME    = vpdump
-VERSION = 0.0
+NAME    = wd
+VERSION = 1.0
 
 # Customize below to fit your system
 
@@ -23,5 +23,5 @@ LDFLAGS = -g ${LIBS}
 
 
 # compiler and linker
-CC = clang
+CC = cc
 
