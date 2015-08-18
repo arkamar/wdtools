@@ -46,6 +46,7 @@ static const struct labels convert[] = {
 };
 
 #define WEEK "WEEK"
+#define PAY_MARK "+++"
 
 static const char * monthnames[] = {
 	"Jan",
