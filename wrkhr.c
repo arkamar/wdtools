@@ -333,7 +333,7 @@ main(int argc, char *argv[]) {
 			}
 			continue;
 		}
-		if (!strncmp(buf, PAY_MARK, LENGTH(PAY_MARK))) {
+		if (!strncmp(buf, PAY_MARK, strlen(PAY_MARK))) {
 			if (!(options.flags & F_PRINT_LAST))
 				print(workingtime);
 			reset();
