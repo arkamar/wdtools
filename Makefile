@@ -9,6 +9,9 @@ BIN = \
 OBJ = ${BIN:=.o} utils.o
 SRC = ${BIN:=.c}
 
+MAN1 = ${BIN:=.1}
+MAN5 = wd-syntax.5
+
 all: options ${BIN}
 
 ${BIN}: ${@:=.o}
@@ -41,14 +44,20 @@ dist: clean
 	@gzip ${NAME}-${VERSION}.tar
 	@rm -rf ${NAME}-${VERSION}
 
-#install: all
-#	@echo installing executable file to ${DESTDIR}${PREFIX}/bin
-#	@mkdir -p ${DESTDIR}${PREFIX}/bin
-#	@cp -f ${NAME} ${DESTDIR}${PREFIX}/bin
-#	@chmod 755 ${DESTDIR}${PREFIX}/bin/${NAME}
-#
-#uninstall:
-#	@echo removing executable file from ${DESTDIR}${PREFIX}/bin
-#	@rm -f ${DESTDIR}${PREFIX}/bin/${NAME}
+install: all
+	@echo installing executable file to ${DESTDIR}${PREFIX}/bin
+	@mkdir -p ${DESTDIR}${PREFIX}/bin
+	@for m in ${BIN} ; do cp -f "$$m" ${DESTDIR}${PREFIX}/bin/${NAME}"$$m" ; done
+	@chmod 755 $(patsubst %, ${DESTDIR}${PREFIX}/bin/${NAME}%, ${BIN})
+	@mkdir -p ${MANPREFIX}1
+	@mkdir -p ${MANPREFIX}5
+	@for m in ${MAN1} ; do cp -f "$$m" ${MANPREFIX}1/${NAME}"$$m" ; done
+	@cp ${MAN5} ${MANPREFIX}5
+
+uninstall:
+	@echo removing executable file from ${DESTDIR}${PREFIX}/bin
+	@rm -f $(patsubst %, ${DESTDIR}${PREFIX}/bin/${NAME}%, ${BIN}) \
+		${MANPREFIX}5/${MAN5} \
+		$(patsubst %, ${MANPREFIX}1/${NAME}%, ${MAN1})
 
 .PHONY: all options clean dist install uninstall
