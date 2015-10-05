@@ -7,7 +7,8 @@ BIN = \
 	stat \
 	wrkhr
 OBJ = ${BIN:=.o} utils.o
-SRC = ${BIN:=.c}
+SRC = ${OBJ:.o=.c}
+HDR = arg.h config.h utils.h
 
 MAN1 = ${BIN:=.1}
 MAN5 = wd-syntax.5
@@ -16,7 +17,7 @@ all: options ${BIN}
 
 ${BIN}: ${@:=.o}
 ${BIN}: utils.o
-${OBJ}: config.mk config.h utils.h
+${OBJ}: ${HDR} config.mk
 
 options:
 	@echo ${NAME} build options:
@@ -38,8 +39,8 @@ clean:
 dist: clean
 	@echo creating dist tarball
 	@mkdir -p ${NAME}-${VERSION}
-	@cp -R Makefile config.mk LICENSE *.h utils.c README \
-		${SRC} ${NAME}-${VERSION}
+	@cp -R Makefile config.mk LICENSE README \
+		${SRC} ${HDR} ${NAME}-${VERSION}
 	@tar -cf ${NAME}-${VERSION}.tar ${NAME}-${VERSION}
 	@gzip ${NAME}-${VERSION}.tar
 	@rm -rf ${NAME}-${VERSION}
