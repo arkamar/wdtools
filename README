@@ -4,18 +4,23 @@ wdtools - WorkDiary Tools
 This is a set of tools to make a statistic from a plain text work diary in
 specific format.
 
-Building
---------
+Installation
+------------
 
-To build wdtools simply type make. You may want to change config.mk depending
-on your system and config.h depending on your needs.
+To install wdtools simply type
+
+	make clean install
+
+You may want to change config.mk depending on your system and
+config.h depending on your needs.
 
 Running wdtools
 ---------------
 
-Simply put your work diary to a standard input of stat, punch or wrkhr with
-selected parameters. The result is printed to the standard output. Read man
-pages for more informations about parameters.
+Simply put your work diary to a standard input of wdstat, wdpunch or
+wdwrkhr with selected parameters. The result is printed to the
+standard output. Read man pages for more informations about
+parameters.
 
 Bugs
 ----
