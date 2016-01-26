@@ -8,8 +8,6 @@
 #include "config.h"
 #include "utils.h"
 
-static char * sec2str(unsigned int sec);
-
 static struct options {
 	unsigned int mph; /* money per hour */
 	unsigned int efc; /* working efficiency */
@@ -37,12 +35,14 @@ struct vector {
 char *argv0;
 struct vector workinglabels;
 
+static
 void
 usage(void) {
 	fprintf(stderr, "usage: %s [-dhlprt] [-W LABEL] [-eM NUMBER]\n", argv0);
 	exit(1);
 }
 
+static
 void
 init() {
 	if (!(workinglabels.data = calloc(sizeof(struct string), 20))) {
@@ -52,6 +52,7 @@ init() {
 	workinglabels.capacity = 20;
 }
 
+static
 int
 resize() {
 	if (workinglabels.size == workinglabels.capacity) {
@@ -68,7 +69,8 @@ resize() {
 	return 0;
 }
 
-static void
+static
+void
 freedata() {
 	size_t i;
 	for (i = 0; i < workinglabels.size; i++) {
@@ -77,7 +79,8 @@ freedata() {
 	free(workinglabels.data);
 }
 
-static int
+static
+int
 compare(const char * str, const long time) {
 	size_t i;
 	const size_t len = strlen(str);
@@ -93,7 +96,8 @@ compare(const char * str, const long time) {
 	return 1;
 }
 
-static void
+static
+void
 add(const char * str, const long time) {
 	if (resize())
 		return;
@@ -104,20 +108,23 @@ add(const char * str, const long time) {
 	workinglabels.size++;
 }
 
-static void
+static
+void
 store(const char * str, const long time) {
 	if (compare(str, time))
 		add(str, time);
 }
 
-static void
+static
+void
 reset() {
 	size_t i;
 	for (i = 0; i < workinglabels.size; i++)
 		workinglabels.data[i].counter = 0;
 }
 
-static void
+static
+void
 printbb() {
 	int i, col = 0;
 	if (options.flags & F_PRINT_DIFF && options.efc)
@@ -138,7 +145,8 @@ printbb() {
 	printf("\n");
 }
 
-static void
+static
+void
 printsplitter() {
 	int i, col = 0;
 	if (options.flags & F_PRINT_DIFF && options.efc)
@@ -159,7 +167,8 @@ printsplitter() {
 	printf("\n");
 }
 
-static void
+static
+void
 printvalues(float value, int * iteration) {
 	if (*iteration)
 		printf(" |");
@@ -170,7 +179,8 @@ printvalues(float value, int * iteration) {
 	++*iteration;
 }
 
-static void
+static
+void
 printline(const char * label, long time) {
 	printf("%-10s", label);
 	int iteration = 0;
@@ -183,7 +193,8 @@ printline(const char * label, long time) {
 	printf("\n");
 }
 
-static void
+static
+void
 printcolname(const char * name, int * i) {
 	const int pt = (options.flags & F_PRINT_TIME) ? 1 : 0;
 	const int pm = (options.mph) ? 1 : 0;
@@ -197,7 +208,8 @@ printcolname(const char * name, int * i) {
 	++*i;
 }
 
-static void
+static
+void
 printhead() {
 	int i = 0, cols = 0;
 	printf("%-10s", "label");
@@ -226,7 +238,8 @@ printhead() {
 	printf("\n");
 }
 
-static void
+static
+void
 print(long other) {
 	size_t i, sum = 0;
 	printbb();
@@ -248,6 +261,7 @@ print(long other) {
 	printbb();
 }
 
+static
 char *
 sec2str(unsigned int sec) {
 	static char buf[16];
@@ -261,9 +275,13 @@ int
 main(int argc, char *argv[]) {
 	FILE *fp = stdin;
 	static char *buf = NULL;
-	static size_t size = 0;
+	static size_t capacity = 0;
+	int len;
 	int label;
 	long workingtime = 0;
+	char * labelchar = "";
+	char paymark[16];
+	int  paymarklen = 0;
 	unsigned int payed = getlabelid("");
 
 	ARGBEGIN {
@@ -277,7 +295,8 @@ main(int argc, char *argv[]) {
 		options.flags |= F_PRINT_TASK;
 		break;
 	case 'W':
-		payed = getlabelid(EARGF(usage()));
+		labelchar = EARGF(usage());
+		payed = getlabelid(labelchar);
 		break;
 	case 'd':
 		options.flags |= F_PRINT_DIFF;
@@ -300,7 +319,10 @@ main(int argc, char *argv[]) {
 
 	init();
 
-	while (getline(&buf, &size, fp) > 0) {
+	sprintf(paymark, PAY_MARK "%s", labelchar);
+	paymarklen = strlen(paymark);
+
+	while ((len = getline(&buf, &capacity, fp)) > 0) {
 		char * time;
 		struct interval interval;
 		if ((time = istask(buf, &interval))) {
@@ -333,7 +355,7 @@ main(int argc, char *argv[]) {
 			}
 			continue;
 		}
-		if (!strncmp(buf, PAY_MARK, strlen(PAY_MARK))) {
+		if (len - 1 == paymarklen && !strncmp(buf, paymark, paymarklen)) {
 			if (!(options.flags & F_PRINT_LAST))
 				print(workingtime);
 			reset();
