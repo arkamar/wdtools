@@ -27,6 +27,7 @@ struct labels {
 static const struct labels convert[] = {
 	{ "all",' ' },
 	{ "",   '+' },
+	{ "E",  '+' },
 	{ "d",  '+' },
 	{ "le", '+' },
 	{ "wd", 'w' },
