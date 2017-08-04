@@ -17,6 +17,7 @@ static struct options {
 #define F_PRINT_TIME  0x10
 #define F_PRINT_HEAD  0x20
 #define F_PRINT_LAST  0x40
+#define F_PRINT_LAST_DAY 0x80
 	unsigned char flags;
 } options;
 
@@ -38,7 +39,7 @@ struct vector workinglabels;
 static
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-dhlprt] [-W LABEL] [-eM NUMBER]\n", argv0);
+	fprintf(stderr, "usage: %s [-dhlLprt] [-W LABEL] [-eM NUMBER]\n", argv0);
 	exit(1);
 }
 
@@ -313,6 +314,9 @@ main(int argc, char *argv[]) {
 	case 'l':
 		options.flags |= F_PRINT_LAST;
 		break;
+	case 'L':
+		options.flags |= F_PRINT_LAST_DAY;
+		break;
 	default:
 		usage();
 	} ARGEND;
@@ -355,8 +359,12 @@ main(int argc, char *argv[]) {
 			}
 			continue;
 		}
+		if (getdayid(buf) >= 0 && options.flags & F_PRINT_LAST_DAY) {
+			reset();
+			continue;
+		}
 		if (len - 1 == paymarklen && !strncmp(buf, paymark, paymarklen)) {
-			if (!(options.flags & F_PRINT_LAST))
+			if (!(options.flags & (F_PRINT_LAST | F_PRINT_LAST_DAY)))
 				print(workingtime);
 			reset();
 			workingtime = 0;
