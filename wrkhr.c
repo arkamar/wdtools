@@ -11,14 +11,15 @@
 static struct options {
 	unsigned int mph; /* money per hour */
 	unsigned int efc; /* working efficiency */
-#define F_PRINT_TASK  0x01
-#define F_PRINT_DIFF  0x02
-#define F_PRINT_REAL  0x04
-#define F_PRINT_TIME  0x10
-#define F_PRINT_HEAD  0x20
-#define F_PRINT_LAST  0x40
-#define F_PRINT_LAST_DAY 0x80
-	unsigned char flags;
+#define F_PRINT_TASK      0x0001
+#define F_PRINT_DIFF      0x0002
+#define F_PRINT_REAL      0x0004
+#define F_PRINT_TIME      0x0010
+#define F_PRINT_HEAD      0x0020
+#define F_PRINT_LAST      0x0040
+#define F_PRINT_LAST_DAY  0x0080
+#define F_PRINT_EVERY_DAY 0x0100
+	unsigned int flags;
 } options;
 
 struct string {
@@ -39,7 +40,7 @@ struct vector workinglabels;
 static
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-dhlLprt] [-W LABEL] [-eM NUMBER]\n", argv0);
+	fprintf(stderr, "usage: %s [-dDhlLprt] [-W LABEL] [-eM NUMBER]\n", argv0);
 	exit(1);
 }
 
@@ -302,6 +303,9 @@ main(int argc, char *argv[]) {
 	case 'd':
 		options.flags |= F_PRINT_DIFF;
 		break;
+	case 'D':
+		options.flags |= F_PRINT_EVERY_DAY;
+		break;
 	case 'r':
 		options.flags |= F_PRINT_REAL;
 		break;
@@ -359,12 +363,17 @@ main(int argc, char *argv[]) {
 			}
 			continue;
 		}
-		if (getdayid(buf) >= 0 && options.flags & F_PRINT_LAST_DAY) {
+		if (getdayid(buf) >= 0 && options.flags & (F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY)) {
+			if (options.flags & F_PRINT_EVERY_DAY) {
+				print(workingtime);
+				puts(buf);
+			}
 			reset();
+			workingtime = 0;
 			continue;
 		}
 		if (len - 1 == paymarklen && !strncmp(buf, paymark, paymarklen)) {
-			if (!(options.flags & (F_PRINT_LAST | F_PRINT_LAST_DAY)))
+			if (!(options.flags & (F_PRINT_LAST | F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY)))
 				print(workingtime);
 			reset();
 			workingtime = 0;
