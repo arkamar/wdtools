@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "arg.h"
+#include "color.h"
 #include "config.h"
 #include "utils.h"
 
@@ -107,8 +108,19 @@ marktable(const int day, const int ibin, const int unused) {
 		const unsigned int time = rounded(data[IDX(day, ibin, label)] * 5,
 			bin * daycounter[day]);
 		for (k = 0; k < time; k++) {
-			if (counter < 5)
-				printf("%c", convert[label].mark);
+			if (counter < 5) {
+				switch (convert[label].mark) {
+				case '+':
+					printf(WD_GREEN "%c" WD_DEFAULT, convert[label].mark);
+					break;
+				case '-':
+					printf(WD_RED "%c" WD_DEFAULT, convert[label].mark);
+					break;
+				default:
+					printf("%c", convert[label].mark);
+					break;
+				}
+			}
 			counter++;
 		}
 	}
