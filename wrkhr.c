@@ -19,6 +19,7 @@ static struct options {
 #define F_PRINT_LAST      0x0040
 #define F_PRINT_LAST_DAY  0x0080
 #define F_PRINT_EVERY_DAY 0x0100
+#define F_PRINT_DATE      0x0200
 	unsigned int flags;
 } options;
 
@@ -311,6 +312,9 @@ main(int argc, char *argv[]) {
 		break;
 	case 't':
 		options.flags |= F_PRINT_TIME;
+		break;
+	case 'T':
+		options.flags |= F_PRINT_DATE;
 		break;
 	case 'h':
 		options.flags |= F_PRINT_HEAD;
