@@ -240,7 +240,7 @@ main(int argc, char *argv[]) {
 			continue;
 		}
 		int rd;
-		if ((rd = getdayid(buf)) >= 0) {
+		if ((rd = getdayid(buf, NULL)) >= 0) {
 			if (options.flags & F_DAY_STAT)
 				printdaystat();
 			if (options.flags & F_PRINT_TASK)

@@ -65,10 +65,16 @@ getlabelid(const char * line) {
 }
 
 int
-getdayid(const char * line) {
-	int a;
-	if (sscanf(line, "%d.%d.%d -", &a, &a, &a) != 3)
+getdayid(const char * line, struct date * date) {
+	int day, month, year;
+	if (sscanf(line, "%d.%d.%d -", &day, &month, &year) != 3)
 		return -1;
+
+	if (date) {
+		date->day = day;
+		date->month = month;
+		date->year = year;
+	}
 	char * hyp = strchr(line, '-');
 	if (!hyp)
 		return -1;

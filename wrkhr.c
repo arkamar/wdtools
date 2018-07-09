@@ -367,7 +367,7 @@ main(int argc, char *argv[]) {
 			}
 			continue;
 		}
-		if (getdayid(buf) >= 0 && options.flags & (F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY)) {
+		if (getdayid(buf, NULL) >= 0 && options.flags & (F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY)) {
 			if (options.flags & F_PRINT_EVERY_DAY) {
 				print(workingtime);
 				puts(buf);

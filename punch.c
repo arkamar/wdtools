@@ -205,7 +205,7 @@ main(int argc, char *argv[]) {
 			continue;
 		}
 		int rd;
-		if ((rd = getdayid(buf)) >= 0) {
+		if ((rd = getdayid(buf, NULL)) >= 0) {
 			day = rd;
 			memset(data + day * arrsize * LENGTH(convert), 0, arrsize * LENGTH(convert) * sizeof(unsigned short));
 			daycounter[day] = 1;
