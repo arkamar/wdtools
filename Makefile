@@ -6,9 +6,8 @@ BIN = \
 	punch \
 	stat \
 	wrkhr
+
 OBJ = ${BIN:=.o} utils.o
-SRC = ${OBJ:.o=.c}
-HDR = arg.h config.h utils.h
 
 MAN1 = ${BIN:=.1}
 MAN5 = wd-syntax.5
@@ -17,20 +16,17 @@ all: options ${BIN}
 
 ${BIN}: ${@:=.o}
 ${BIN}: utils.o
-${OBJ}: ${HDR} config.mk
+
+punch.o: punch.c arg.h color.h config.h utils.h
+stat.o: stat.c arg.h config.h utils.h
+utils.o: utils.c config.h utils.h
+wrkhr.o: wrkhr.c arg.h config.h utils.h
 
 options:
 	@echo ${NAME} build options:
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
-
-.o:
-	${CC} ${LDFLAGS} -o $@ $^
-
-.c.o:
-	@echo CC $<
-	@${CC} -c ${CFLAGS} $<
 
 clean:
 	@echo cleaning
