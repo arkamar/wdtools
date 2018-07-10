@@ -19,20 +19,20 @@ static struct options {
 #define F_PRINT_LAST      0x0040
 #define F_PRINT_LAST_DAY  0x0080
 #define F_PRINT_EVERY_DAY 0x0100
-#define F_PRINT_DATE      0x0200
+#define F_PRINT_REDMINE   0x0200
 	unsigned int flags;
 } options;
 
-struct string {
+struct data {
 	long counter;
-	size_t len;
-	char * str;
+	struct date date;
+	char * label;
 };
 
 struct vector {
 	size_t capacity;
 	size_t size;
-	struct string * data;
+	struct data * data;
 };
 
 char *argv0;
@@ -41,14 +41,14 @@ struct vector workinglabels;
 static
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-dDhlLprt] [-W LABEL] [-eM NUMBER]\n", argv0);
+	fprintf(stderr, "usage: %s [-dDhlLprRt] [-W LABEL] [-eM NUMBER]\n", argv0);
 	exit(1);
 }
 
 static
 void
 init() {
-	if (!(workinglabels.data = calloc(sizeof(struct string), 20))) {
+	if (!(workinglabels.data = calloc(sizeof *workinglabels.data, 20))) {
 		fprintf(stderr, "Cannot alloc enough memory\n");
 		return;
 	}
@@ -60,7 +60,7 @@ int
 resize() {
 	if (workinglabels.size == workinglabels.capacity) {
 		const size_t newcap = workinglabels.capacity * 3 / 2;
-		void * newdata = realloc(workinglabels.data, newcap * sizeof(struct string));
+		void * newdata = realloc(workinglabels.data, newcap * sizeof *workinglabels.data);
 		if (newdata) {
 			workinglabels.data = newdata;
 			workinglabels.capacity = newcap;
@@ -77,21 +77,20 @@ void
 freedata() {
 	size_t i;
 	for (i = 0; i < workinglabels.size; i++) {
-		free(workinglabels.data[i].str);
+		free(workinglabels.data[i].label);
 	}
 	free(workinglabels.data);
 }
 
 static
 int
-compare(const char * str, const long time) {
+compare(const char * label, const long time) {
 	size_t i;
-	const size_t len = strlen(str);
 	for (i = 0; i < workinglabels.size; i++) {
-		struct string * item = &workinglabels.data[i];
-		if (len != item->len)
+		struct data * item = &workinglabels.data[i];
+		if (!item->label)
 			continue;
-		if (!memcmp(item->str, str, len)) {
+		if (!strcmp(item->label, label)) {
 			item->counter += time;
 			return 0;
 		}
@@ -101,12 +100,11 @@ compare(const char * str, const long time) {
 
 static
 void
-add(const char * str, const long time) {
+add(const char * label, const long time) {
 	if (resize())
 		return;
-	struct string * item = &workinglabels.data[workinglabels.size];
-	item->len = strlen(str);
-	item->str = strndup(str, item->len);
+	struct data * item = &workinglabels.data[workinglabels.size];
+	item->label = strdup(label);
 	item->counter = time;
 	workinglabels.size++;
 }
@@ -184,8 +182,10 @@ printvalues(float value, int * iteration) {
 
 static
 void
-printline(const char * label, long time) {
+printline(const char * label, const struct date * date, long time) {
 	printf("%-10s", label);
+	if (date)
+		printf("%04d-%02d-%02d ", date->year, date->month, date->day);
 	int iteration = 0;
 	if (options.efc)
 		printvalues(time / 3600.0 * 100.0 / options.efc, &iteration);
@@ -243,25 +243,27 @@ printhead() {
 
 static
 void
-print(long other) {
+print(long other, const struct date * date) {
 	size_t i, sum = 0;
-	printbb();
+	if (!(options.flags & F_PRINT_REDMINE))
+		printbb();
 	if (options.flags & F_PRINT_HEAD) {
 		printhead();
 		printsplitter();
 	}
 	for (i = 0; i < workinglabels.size; i++) {
 		if (workinglabels.data[i].counter)
-			printline(workinglabels.data[i].str, workinglabels.data[i].counter);
+			printline(workinglabels.data[i].label, date, workinglabels.data[i].counter);
 		sum += workinglabels.data[i].counter;
 	}
 	if (other)
-		printline("other", other);
-	if (sum + other) {
+		printline("other", date, other);
+	if (sum + other && !(options.flags & F_PRINT_REDMINE)) {
 		printsplitter();
-		printline("all", sum + other);
+		printline("all", date, sum + other);
 	}
-	printbb();
+	if (!(options.flags & F_PRINT_REDMINE))
+		printbb();
 }
 
 static
@@ -281,11 +283,13 @@ main(int argc, char *argv[]) {
 	static size_t capacity = 0;
 	int len;
 	int label;
+	int ret;
 	long workingtime = 0;
 	char * labelchar = "";
 	char paymark[16];
 	int  paymarklen = 0;
 	unsigned int payed = getlabelid("");
+	struct date newdate, date;
 
 	ARGBEGIN {
 	case 'e':
@@ -313,8 +317,8 @@ main(int argc, char *argv[]) {
 	case 't':
 		options.flags |= F_PRINT_TIME;
 		break;
-	case 'T':
-		options.flags |= F_PRINT_DATE;
+	case 'R': /* prepare for redmine-log-time utility */
+		options.flags |= F_PRINT_REDMINE | F_PRINT_EVERY_DAY;
 		break;
 	case 'h':
 		options.flags |= F_PRINT_HEAD;
@@ -367,24 +371,39 @@ main(int argc, char *argv[]) {
 			}
 			continue;
 		}
-		if (getdayid(buf, NULL) >= 0 && options.flags & (F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY)) {
-			if (options.flags & F_PRINT_EVERY_DAY) {
-				print(workingtime);
-				puts(buf);
+		if ((ret = getdayid(buf, &newdate)) >= 0) {
+			if (options.flags & (F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY)) {
+				if (options.flags & F_PRINT_EVERY_DAY) {
+					if (options.flags & F_PRINT_REDMINE) {
+						print(workingtime, &date);
+					} else {
+						print(workingtime, NULL);
+						puts(buf);
+					}
+				}
+				reset();
+				workingtime = 0;
 			}
-			reset();
-			workingtime = 0;
+			date.day = newdate.day;
+			date.month = newdate.month;
+			date.year = newdate.year;
 			continue;
 		}
 		if (len - 1 == paymarklen && !strncmp(buf, paymark, paymarklen)) {
-			if (!(options.flags & (F_PRINT_LAST | F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY)))
-				print(workingtime);
+			if (!(options.flags & (F_PRINT_LAST | F_PRINT_LAST_DAY | F_PRINT_EVERY_DAY))) {
+				if (options.flags & F_PRINT_REDMINE)
+					print(workingtime, &date);
+				else
+					print(workingtime, NULL);
+			}
 			reset();
 			workingtime = 0;
 		}
 	}
-
-	print(workingtime);
+	if (options.flags & F_PRINT_REDMINE)
+		print(workingtime, &date);
+	else
+		print(workingtime, NULL);
 
 	free(buf);
 	freedata();
