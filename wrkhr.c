@@ -318,7 +318,8 @@ main(int argc, char *argv[]) {
 		options.flags |= F_PRINT_TIME;
 		break;
 	case 'R': /* prepare for redmine-log-time utility */
-		options.flags |= F_PRINT_REDMINE | F_PRINT_EVERY_DAY;
+		options.flags |= F_PRINT_REDMINE | F_PRINT_EVERY_DAY | F_PRINT_TIME;
+		options.efc = 85;
 		break;
 	case 'h':
 		options.flags |= F_PRINT_HEAD;
