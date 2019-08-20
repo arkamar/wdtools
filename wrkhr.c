@@ -134,7 +134,7 @@ printbb() {
 		col++;
 	if (options.flags & F_PRINT_REAL)
 		col++;
-	printf("==========");
+	printf("=============");
 	for (i = 0; i < col; i++) {
 		if (i)
 			printf("==");
@@ -156,7 +156,7 @@ printsplitter() {
 		col++;
 	if (options.flags & F_PRINT_REAL)
 		col++;
-	printf("----------");
+	printf("-------------");
 	for (i = 0; i < col; i++) {
 		if (i)
 			printf("-+");
@@ -183,7 +183,7 @@ printvalues(float value, int * iteration) {
 static
 void
 printline(const char * label, const struct date * date, long time) {
-	printf("%-10s", label);
+	printf("%-13s", label);
 	if (date)
 		printf("%04d-%02d-%02d ", date->year, date->month, date->day);
 	int iteration = 0;
@@ -215,7 +215,7 @@ static
 void
 printhead() {
 	int i = 0, cols = 0;
-	printf("%-10s", "label");
+	printf("WL %-10s", "label");
 	if (options.efc) {
 		printcolname("optim", &i);
 		cols++;
@@ -229,7 +229,7 @@ printhead() {
 		cols++;
 	}
 	printf("\n");
-	printf("%-10s", "");
+	printf("   %-10s", "");
 	for (i = 0; i < cols; i++) {
 		if (i)
 			printf(" |");
@@ -288,8 +288,8 @@ main(int argc, char *argv[]) {
 	char * labelchar = "";
 	char paymark[16];
 	int  paymarklen = 0;
-	unsigned int payed = getlabelid("");
 	struct date newdate, date;
+	int payed = -1;
 
 	ARGBEGIN {
 	case 'e':
@@ -345,8 +345,11 @@ main(int argc, char *argv[]) {
 		if ((time = istask(buf, &interval))) {
 			const int timeint = interval.stop - interval.start;
 			label = getlabelid(buf);
-			if (label != payed)
+			if (payed == -1 && (label < 1 || label > 4)) {
 				continue;
+			} else if (payed != -1 && payed != label) {
+				continue;
+			}
 			char * tmp = strchr(time, ')');
 			if (!tmp)
 				continue;
@@ -355,7 +358,9 @@ main(int argc, char *argv[]) {
 			if (hyphen) {
 				hyphen[-1] = '\0';
 				wl = tmp + 2;
-				store(wl, timeint);
+				char name[128];
+				sprintf(name, "%-2s %s", convert[label].label, wl);
+				store(name, timeint);
 			} else {
 				workingtime += timeint;
 			}
