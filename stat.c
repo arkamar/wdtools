@@ -178,7 +178,7 @@ main(int argc, char *argv[]) {
 	int label, workingtime = 0;
 	const unsigned int procrastination = getlabelid("!*");
 	const unsigned int work = getlabelid("+");
-	unsigned int payed = getlabelid("");
+	int payed = -1;
 
 	ARGBEGIN {
 	case 'c':
@@ -235,8 +235,9 @@ main(int argc, char *argv[]) {
 				set(timeint, procrastination);
 			if (convert[label].mark == '+')
 				set(timeint, work);
-			if (label == payed)
+			if (label == payed || (payed == -1 && label >= 1 && label <= 4)) {
 				workingtime += timeint;
+			}
 			continue;
 		}
 		int rd;
