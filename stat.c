@@ -35,6 +35,7 @@ static struct options {
 #define F_DAY_STAT    0x02
 #define F_WEEK_STAT   0x04
 #define F_MONTH_STAT  0x08
+#define F_TIME_OPTIM  0x10
 	unsigned char flags;
 } options;
 
@@ -49,7 +50,7 @@ char *argv0;
 
 void
 usage(void) {
-	fprintf(stderr, "usage: %s [-dmtw] [-ceM number] [-W label]\n", argv0);
+	fprintf(stderr, "usage: %s [-dmtwo] [-ceM number] [-W label]\n", argv0);
 	exit(1);
 }
 
@@ -106,20 +107,33 @@ printlabels() {
 	printf("%6s \n", "all");
 }
 
+static
+void
+printval(int value, const float divisor) {
+	if (options.flags & F_TIME_OPTIM) {
+		value = value * 100 / options.efc;
+	}
+	printf("%6.*f ", (value / divisor < 1000) ? 2 : 1, value / divisor);
+}
+
 void
 printstatline(const char * label, const int * array, const float divisor) {
 	int i;
 	printf("%s ", label);
-	for (i = 1; i < columns; i++)
-		printf("%6.*f ", (array[i] / divisor < 1000) ? 2 : 1, array[i] / divisor);
-	printf("%6.*f ", (array[0] / divisor < 1000) ? 2 : 1, array[0] / divisor);
+	for (i = 1; i < columns; i++) {
+		printval(array[i], divisor);
+	}
+	printval(array[0], divisor);
 	printf("\n");
 }
 
 void
 printpercstatline(const char * label, const int * array) {
 	if (array[0])
-		printstatline(label, array, array[0] / 100.0);
+		printstatline(label, array,
+			(options.flags & F_TIME_OPTIM)
+			? array[0] * 100 / options.efc / 100.0
+			: array[0] / 100.0);
 }
 
 void
@@ -197,6 +211,9 @@ main(int argc, char *argv[]) {
 		break;
 	case 'M':
 		options.mph = atoi(EARGF(usage()));
+		break;
+	case 'o':
+		options.flags |= F_TIME_OPTIM;
 		break;
 	case 't':
 		options.flags |= F_PRINT_TASK;
